@@ -15,6 +15,10 @@ from app.schemas import (
 from app.modules.shopify_scraper import ShopifyScraper, ShopifyURLValidator
 from app.modules.nlp_analyzer import NLPAnalyzer
 from app.modules.scoring_engine import ScoringEngine, IssueDetector, AIPerceptionSimulator
+from app.modules.advanced_nlp import AdvancedNLPAnalyzer
+from app.modules.explainability import ConfidenceExplainer
+from app.modules.gemini_insights import get_gemini_insights
+from app.database import init_db
 
 # Load environment variables
 load_dotenv()
@@ -23,17 +27,48 @@ load_dotenv()
 app = FastAPI(
     title="Qurly API",
     description="AI Representation Optimizer for Shopify Products",
-    version="0.1.0",
+    version="2.0.0",
 )
 
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins (configure as needed)
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:3002",
+        "http://localhost:3003",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001",
+        "http://127.0.0.1:3002",
+        "http://127.0.0.1:3003",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=600,
 )
+
+# Initialize database on startup
+@app.on_event("startup")
+def startup_event():
+    """Initialize database on app startup"""
+    try:
+        init_db()
+        print("✓ Database initialized")
+    except Exception as e:
+        print(f"✗ Database initialization error: {e}")
+
+# Include advanced endpoints
+try:
+    from app.endpoints import router as advanced_router
+    app.include_router(advanced_router)
+except Exception as e:
+    print(f"Warning: Could not load advanced endpoints: {e}")
+
 
 
 @app.get("/")
@@ -85,6 +120,19 @@ def analyze_product(url: str) -> AnalysisResult:
         nlp_analyzer = NLPAnalyzer()
         nlp_features = nlp_analyzer.analyze_description(product_data.description)
         
+        # Advanced NLP Analysis (sentiment, readability, keywords, spam detection)
+        advanced_analyzer = AdvancedNLPAnalyzer(
+            product_data.description,
+            product_data.title
+        )
+        advanced_analysis = advanced_analyzer.analyze_full()
+        
+        # Merge advanced NLP with basic features
+        nlp_features["sentiment"] = advanced_analysis["sentiment"]
+        nlp_features["readability"] = advanced_analysis["readability"]
+        nlp_features["keywords"] = advanced_analysis["keywords"]
+        nlp_features["spam_detection"] = advanced_analysis["spam_detection"]
+        
         # Calculate scores
         scoring_engine = ScoringEngine()
         scores = scoring_engine.calculate_scores(product_data, nlp_features)
@@ -92,6 +140,10 @@ def analyze_product(url: str) -> AnalysisResult:
         # Detect issues
         issue_detector = IssueDetector()
         issues = issue_detector.detect_issues(product_data, nlp_features, scores)
+        
+        # Generate confidence-scored explanations
+        explainer = ConfidenceExplainer(scores, nlp_features, product_data.__dict__)
+        confidence_scores = explainer.get_full_explanation()
         
         # Generate AI perception
         perception_simulator = AIPerceptionSimulator()
@@ -101,7 +153,27 @@ def analyze_product(url: str) -> AnalysisResult:
             scores, issues
         )
         
-        # Build result
+        # Generate Gemini-powered insights if available
+        gemini = get_gemini_insights()
+        gemini_insights = {}
+        if gemini.is_available():
+            try:
+                gemini_insights["optimization_suggestions"] = gemini.generate_optimization_suggestions(
+                    product_data.__dict__, issues, scores
+                )
+                gemini_insights["ai_perception_analysis"] = gemini.analyze_ai_perception(
+                    product_data.__dict__
+                )
+                gemini_insights["available"] = True
+            except Exception as e:
+                print(f"Warning: Gemini API error: {e}")
+                gemini_insights["available"] = False
+                gemini_insights["error"] = str(e)
+        else:
+            gemini_insights["available"] = False
+            gemini_insights["message"] = "Gemini API not configured"
+        
+        # Build result with advanced features
         result = AnalysisResult(
             url=url,
             product_data=product_data,
@@ -113,7 +185,13 @@ def analyze_product(url: str) -> AnalysisResult:
             potential_improvement=int(potential_improvement),
         )
         
-        return result
+        # Attach confidence scores and insights to result
+        result_dict = result.dict()
+        result_dict["confidence_scores"] = confidence_scores
+        result_dict["advanced_nlp"] = advanced_analysis
+        result_dict["gemini_insights"] = gemini_insights
+        
+        return result_dict
         
     except HTTPException:
         raise

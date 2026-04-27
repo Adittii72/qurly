@@ -1,0 +1,187 @@
+"""
+PDF report generation and sharing utilities
+"""
+from datetime import datetime
+import json
+
+
+class ReportGenerator:
+    """Generate exportable reports (PDF, JSON, etc.)"""
+    
+    def __init__(self, report_data: dict, user_data: dict = None):
+        self.report = report_data
+        self.user = user_data or {}
+    
+    def generate_summary(self) -> str:
+        """Generate text summary of report"""
+        summary = []
+        summary.append("=" * 60)
+        summary.append("QURLY - AI PRODUCT ANALYSIS REPORT")
+        summary.append("=" * 60)
+        summary.append(f"\nGenerated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        
+        if self.user:
+            summary.append(f"Analyzed by: {self.user.get('username', 'Unknown')}")
+        
+        summary.append(f"\nProduct: {self.report.get('product_title', 'N/A')}")
+        summary.append(f"URL: {self.report.get('product_url', 'N/A')}")
+        
+        # Overall Score
+        summary.append("\n" + "=" * 60)
+        summary.append("OVERALL SCORE")
+        summary.append("=" * 60)
+        overall = self.report.get('overall_score', 0)
+        summary.append(f"Score: {overall:.1f}/10")
+        summary.append(f"Label: {self._get_score_label(overall)}")
+        
+        # Score Breakdown
+        summary.append("\n" + "=" * 60)
+        summary.append("SCORE BREAKDOWN")
+        summary.append("=" * 60)
+        summary.append(f"Clarity:       {self.report.get('clarity_score', 0):.1f}/10")
+        summary.append(f"Trust:         {self.report.get('trust_score', 0):.1f}/10")
+        summary.append(f"Completeness:  {self.report.get('completeness_score', 0):.1f}/10")
+        summary.append(f"Structure:     {self.report.get('structure_score', 0):.1f}/10")
+        
+        # Issues
+        summary.append("\n" + "=" * 60)
+        summary.append("KEY ISSUES")
+        summary.append("=" * 60)
+        issues = self.report.get('issues', [])
+        if issues:
+            for i, issue in enumerate(issues[:10], 1):
+                priority = issue.get('priority', 'MEDIUM')
+                title = issue.get('title', 'Unknown')
+                summary.append(f"\n{i}. [{priority}] {title}")
+                summary.append(f"   Description: {issue.get('description', 'N/A')}")
+                summary.append(f"   Suggestion: {issue.get('suggestion', 'N/A')}")
+        else:
+            summary.append("No issues found!")
+        
+        # NLP Insights
+        nlp = self.report.get('nlp_features', {})
+        if nlp:
+            summary.append("\n" + "=" * 60)
+            summary.append("NLP INSIGHTS")
+            summary.append("=" * 60)
+            
+            if 'sentiment' in nlp:
+                sentiment = nlp['sentiment']
+                summary.append(f"Sentiment: {sentiment.get('label', 'N/A')} (Polarity: {sentiment.get('polarity', 0)})")
+            
+            if 'readability' in nlp:
+                readability = nlp['readability']
+                summary.append(f"Readability: {readability.get('label', 'N/A')}")
+                summary.append(f"  - Flesch Reading Ease: {readability.get('flesch_reading_ease', 0)}")
+                summary.append(f"  - Grade Level: {readability.get('flesch_kincaid_grade', 0)}")
+            
+            if 'keywords' in nlp:
+                keywords = nlp['keywords']
+                summary.append(f"Top Keywords: {', '.join([k['keyword'] for k in keywords.get('top_keywords', [])[:5]])}")
+            
+            if 'spam_detection' in nlp:
+                spam = nlp['spam_detection']
+                summary.append(f"Spam Risk: {spam.get('label', 'N/A')} (Score: {spam.get('spam_score', 0)}%)")
+        
+        # Benchmark
+        summary.append("\n" + "=" * 60)
+        summary.append("BENCHMARK COMPARISON")
+        summary.append("=" * 60)
+        benchmark = self.report.get('benchmark_comparison', {})
+        if benchmark:
+            summary.append(f"Your Clarity vs Ideal:       {benchmark.get('clarity', {}).get('current', 0)}/10")
+            summary.append(f"Your Trust vs Ideal:         {benchmark.get('trust', {}).get('current', 0)}/10")
+            summary.append(f"Your Completeness vs Ideal:  {benchmark.get('completeness', {}).get('current', 0)}/10")
+            summary.append(f"Your Structure vs Ideal:     {benchmark.get('structure', {}).get('current', 0)}/10")
+        
+        # Recommendations
+        summary.append("\n" + "=" * 60)
+        summary.append("TOP RECOMMENDATIONS")
+        summary.append("=" * 60)
+        
+        confidence = self.report.get('confidence_scores', {})
+        if confidence and 'recommendations' in confidence:
+            for i, rec in enumerate(confidence['recommendations'][:5], 1):
+                summary.append(f"{i}. {rec}")
+        else:
+            summary.append("See issues section above for recommendations")
+        
+        summary.append("\n" + "=" * 60)
+        summary.append("Report generated by Qurly AI Analysis Engine")
+        summary.append("https://qurly.ai")
+        summary.append("=" * 60)
+        
+        return "\n".join(summary)
+    
+    def generate_json(self) -> dict:
+        """Generate JSON export"""
+        return {
+            "generated_at": datetime.now().isoformat(),
+            "report": self.report,
+            "user": {
+                "username": self.user.get('username', 'Anonymous'),
+                "email": self.user.get('email', '')
+            }
+        }
+    
+    def generate_markdown(self) -> str:
+        """Generate Markdown report"""
+        md = []
+        md.append("# Qurly AI Product Analysis Report\n")
+        md.append(f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        
+        md.append(f"## Product Analysis\n")
+        md.append(f"- **Product:** {self.report.get('product_title', 'N/A')}")
+        md.append(f"- **URL:** {self.report.get('product_url', 'N/A')}\n")
+        
+        # Overall Score
+        overall = self.report.get('overall_score', 0)
+        md.append(f"## Overall Score: {overall:.1f}/10 ({self._get_score_label(overall)})\n")
+        
+        # Score Cards
+        md.append("## Detailed Scores\n")
+        md.append(f"| Metric | Score | Label |")
+        md.append(f"|--------|-------|-------|")
+        md.append(f"| Clarity | {self.report.get('clarity_score', 0):.1f} | {self._get_score_label(self.report.get('clarity_score', 0))} |")
+        md.append(f"| Trust | {self.report.get('trust_score', 0):.1f} | {self._get_score_label(self.report.get('trust_score', 0))} |")
+        md.append(f"| Completeness | {self.report.get('completeness_score', 0):.1f} | {self._get_score_label(self.report.get('completeness_score', 0))} |")
+        md.append(f"| Structure | {self.report.get('structure_score', 0):.1f} | {self._get_score_label(self.report.get('structure_score', 0))} |\n")
+        
+        # Issues
+        md.append("## Issues Found\n")
+        issues = self.report.get('issues', [])
+        if issues:
+            for issue in issues[:5]:
+                priority = issue.get('priority', 'MEDIUM')
+                emoji = {'HIGH': '🔴', 'MEDIUM': '🟡', 'LOW': '🟢'}.get(priority, '⚪')
+                md.append(f"### {emoji} {issue.get('title', 'Unknown')}")
+                md.append(f"- **Priority:** {priority}")
+                md.append(f"- **Description:** {issue.get('description', 'N/A')}")
+                md.append(f"- **Suggestion:** {issue.get('suggestion', 'N/A')}\n")
+        else:
+            md.append("✅ No critical issues found!\n")
+        
+        return "\n".join(md)
+    
+    def _get_score_label(self, score: float) -> str:
+        """Get label for score"""
+        if score >= 8:
+            return "Excellent"
+        elif score >= 6:
+            return "Good"
+        elif score >= 4:
+            return "Fair"
+        else:
+            return "Needs Work"
+    
+    def get_share_link_data(self) -> dict:
+        """Get data for shareable report link"""
+        return {
+            "product_title": self.report.get('product_title'),
+            "overall_score": self.report.get('overall_score'),
+            "clarity_score": self.report.get('clarity_score'),
+            "trust_score": self.report.get('trust_score'),
+            "completeness_score": self.report.get('completeness_score'),
+            "structure_score": self.report.get('structure_score'),
+            "timestamp": datetime.now().isoformat()
+        }
