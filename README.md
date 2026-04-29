@@ -1,513 +1,481 @@
 # 🛍️ Qurly - AI Representation Optimizer
 
-> **Merchant-facing analytics tool that analyzes how AI shopping agents perceive Shopify product pages and provides actionable recommendations to improve AI recommendation visibility**
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![React 18](https://img.shields.io/badge/react-18.0+-61DAFB.svg)](https://reactjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-009688.svg)](https://fastapi.tiangolo.com/)
+
+> **Optimize your Shopify products for AI shopping agents and boost recommendations with data-driven insights**
+
+Qurly is a merchant-facing tool that analyzes how AI shopping agents perceive Shopify product pages and provides actionable recommendations to improve AI recommendation visibility and conversion rates.
 
 ---
 
 ## 🎯 Problem Statement
 
-AI shopping agents (like Google Shopping, Amazon, and emerging agentic commerce platforms) are becoming crucial for product discovery. However, many merchants don't understand how these agents perceive their product pages. 
+As AI shopping agents (like ChatGPT Shopping, Google Shopping AI, Perplexity Shopping) become mainstream, e-commerce businesses face a new challenge: **How do AI agents perceive and recommend your products?**
 
-**Qurly solves this** by analyzing products through an AI agent's lens and providing specific, data-driven optimizations to improve visibility and recommendation likelihood.
+Traditional SEO optimizes for search engines. Qurly optimizes for **AI agents** — ensuring your products are clearly understood, trusted, and recommended by AI shopping assistants.
 
-## 👥 Who Is This For?
+---
 
-- **Shopify Merchants** - Want to maximize visibility to AI shopping agents
-- **E-commerce Teams** - Need data on how AI agents perceive product listings  
-- **Product Managers** - Optimizing product information architecture
+## ✨ Features
 
-## ✨ Key Features
+### Core Analysis
+- **🤖 AI Perception Analysis** - Understand how AI agents interpret your product data
+- **📊 Multi-Dimensional Scoring** - Get scores on Clarity, Trust, Completeness, and Structure (0-10 scale)
+- **🔍 Issue Detection** - Identify specific problems preventing AI recommendations
+- **💡 Actionable Recommendations** - Receive prioritized suggestions to improve scores
 
-| Feature | Description |
-|---------|-----------|
-| **AI Perception Analysis** | See exactly how AI agents perceive your product |
-| **4-Metric Scoring System** | Clarity, Trust, Completeness, Structure (0-10 each) |
-| **Issue Detection** | Identify specific problems blocking AI recommendations |
-| **Confidence Explainability** | Understand WHY each score is what it is |
-| **AI Readiness Checklist** | 10-point checklist of AI readiness criteria |
-| **Description Rewriting** | Get Gemini-powered optimized descriptions |
-| **Before/After Simulation** | See how changes impact scores |
-| **Historical Tracking** | Monitor improvements over time |
-| **Multi-Product Benchmarking** | Compare against category averages |
-| **Report Generation** | Export as JSON, Text, Markdown, or PDF |
+### Advanced Features
+- **✅ AI Readiness Checklist** - 10-point checklist showing what's missing for AI optimization
+- **📈 Before/After Simulation** - Preview score improvements before applying changes
+- **🎯 Benchmark Comparison** - Compare against industry averages by category
+- **🔄 Historical Tracking** - Monitor score improvements over time
+- **📝 AI-Powered Rewriting** - Auto-generate optimized descriptions using Gemini AI
+- **📄 Export Reports** - Download analysis as JSON, Markdown, Text, or PDF
+- **🔐 User Accounts** - Save analyses, track history, and manage favorites
+
+---
 
 ## 🏗️ Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                      QURLY PLATFORM                          │
-├─────────────────────────────────────────────────────────────┤
-│                                                               │
-│  ┌──────────────────┐          ┌──────────────────┐         │
-│  │  React Frontend  │◄────────►│  FastAPI Backend  │        │
-│  │  (Hostinger)     │ (REST)   │  (Render)         │        │
-│  └──────────────────┘          └──────────────────┘        │
-│         │                              │                     │
-│         │                              ├─► Shopify Scraper   │
-│         │                              │   (JSON + HTML)     │
-│         │                         ┌────┴────────────┐       │
-│         │                         │   Core Modules  │       │
-│         │                         ├─────────────────┤       │
-│         │                         │ • NLP Analysis  │       │
-│         │                         │ • Scoring Eng.  │       │
-│         │                         │ • Gemini AI     │       │
-│         │                         │ • Reporting     │       │
-│         │                         └─────────────────┘       │
-│         │                                                    │
-│         └────────────────►┌──────────────────┐             │
-│                           │   Supabase       │             │
-│                           │   PostgreSQL     │             │
-│                           │   (Production)   │             │
-│                           └──────────────────┘             │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
+│                        FRONTEND (React)                      │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│  │  Landing     │  │  Dashboard   │  │  Analysis    │     │
+│  │  Page        │  │  (Reports)   │  │  View        │     │
+│  └──────────────┘  └──────────────┘  └──────────────┘     │
+│         │                  │                  │             │
+│         └──────────────────┴──────────────────┘             │
+│                            │                                │
+│                    ┌───────▼────────┐                       │
+│                    │   API Client   │                       │
+│                    │   (Axios)      │                       │
+│                    └───────┬────────┘                       │
+└────────────────────────────┼──────────────────────────────┘
+                             │ HTTPS
+┌────────────────────────────▼──────────────────────────────┐
+│                    BACKEND (FastAPI)                       │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
+│  │  Auth        │  │  Analysis    │  │  Reports     │   │
+│  │  Endpoints   │  │  Engine      │  │  CRUD        │   │
+│  └──────────────┘  └──────────────┘  └──────────────┘   │
+│         │                  │                  │           │
+│         └──────────────────┴──────────────────┘           │
+│                            │                              │
+│  ┌─────────────────────────▼────────────────────────┐    │
+│  │              Core Modules                        │    │
+│  │  • Shopify Scraper (JSON API + HTML fallback)   │    │
+│  │  • NLP Analyzer (TextBlob + Advanced NLP)       │    │
+│  │  • Scoring Engine (4 dimensions)                │    │
+│  │  • Gemini Insights (AI recommendations)         │    │
+│  │  • Report Generator (PDF/JSON/Markdown)         │    │
+│  └──────────────────────────────────────────────────┘    │
+│                            │                              │
+│                    ┌───────▼────────┐                     │
+│                    │   PostgreSQL   │                     │
+│                    │   (Supabase)   │                     │
+│                    └────────────────┘                     │
+└───────────────────────────────────────────────────────────┘
 ```
 
-## 🚀 Tech Stack
+---
 
-### Frontend
-- **React 18** - Modern component-based UI
-- **React Icons** - Professional icon library
-- **Axios** - HTTP client
-- **CSS Grid/Flexbox** - Responsive design
-- **Error Boundaries** - Graceful error handling
-
-### Backend
-- **FastAPI** - High-performance Python framework
-- **SQLAlchemy 2.0** - ORM for both SQLite & PostgreSQL
-- **Pydantic** - Type-safe data validation
-- **Google Gemini API** - AI-powered suggestions
-- **TextBlob** - NLP analysis (sentiment, readability)
-- **BeautifulSoup** - HTML scraping (fallback)
-- **ReportLab** - PDF generation
-
-### Database
-- **Supabase PostgreSQL** - Production database (free tier)
-- **SQLite** - Local development database
-
-### Deployment
-- **Render** - FastAPI backend (free tier)
-- **Hostinger cPanel** - Static React hosting
-
-## 📋 Setup Instructions
+## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.8+
-- Node.js 14+
-- Google Gemini API key (free at https://makersuite.google.com)
-- Optional: Supabase account for production
+- Python 3.9+
+- Node.js 16+
+- PostgreSQL (or use Supabase)
+- Google Gemini API key
 
-### Backend Setup (Local)
+### Backend Setup
 
+1. **Clone the repository**
 ```bash
-# Navigate to backend
-cd backend
+git clone https://github.com/yourusername/qurly.git
+cd qurly/backend
+```
 
-# Create virtual environment
+2. **Create virtual environment**
+```bash
 python -m venv venv
-source venv/Scripts/activate  # Windows
-# or
-source venv/bin/activate      # macOS/Linux
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-# Install dependencies
+3. **Install dependencies**
+```bash
 pip install -r requirements.txt
+```
 
-# Create .env file
-cat > .env << EOF
-DATABASE_URL=sqlite:///./qurly.db
-GEMINI_API_KEY=your_gemini_api_key_here
-SECRET_KEY=your-secret-key-min-32-characters
-JWT_SECRET_KEY=your-jwt-secret-key-min-32-chars
-FRONTEND_URL=http://localhost:3000
-BACKEND_URL=http://localhost:8000
-ENVIRONMENT=development
-DEBUG=true
-EOF
+4. **Configure environment variables**
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+```
 
-# Initialize database
-python -c "from app.database import init_db; init_db()"
+Required environment variables:
+```env
+DATABASE_URL=postgresql+psycopg2://user:password@host:port/database
+GEMINI_API_KEY=your_gemini_api_key
+SECRET_KEY=your_jwt_secret_key_minimum_32_characters
+FRONTEND_URL=https://yourdomain.com
+BACKEND_URL=https://your-backend.onrender.com
+```
 
-# Start backend (http://localhost:8000)
+5. **Run database migrations**
+```bash
+# If using Alembic
+alembic upgrade head
+
+# Or let SQLAlchemy create tables automatically on first run
 python run.py
 ```
 
-### Frontend Setup (Local)
-
+6. **Start the backend server**
 ```bash
-# Navigate to frontend
-cd frontend
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
 
-# Install dependencies
+Backend will be available at `http://localhost:8000`
+
+### Frontend Setup
+
+1. **Navigate to frontend directory**
+```bash
+cd ../frontend
+```
+
+2. **Install dependencies**
+```bash
 npm install
-
-# Create .env file
-echo "REACT_APP_API_URL=http://localhost:8000" > .env
-
-# Start development server (http://localhost:3000)
-npm start
 ```
 
-### Production Deployment
-
-#### Backend on Render
-1. Create Render account (https://render.com)
-2. Connect GitHub repository
-3. Create new Web Service
-4. Set environment variables:
-   - `DATABASE_URL` - Supabase PostgreSQL connection string
-   - `GEMINI_API_KEY` - Your Gemini API key
-   - Other env vars from `.env.example`
-5. Deploy
-
-#### Database on Supabase
-1. Create Supabase project (https://supabase.com)
-2. Get PostgreSQL connection string: `postgresql+psycopg2://user:pass@host:5432/db`
-3. Add to `DATABASE_URL` in Render environment
-
-#### Frontend on Hostinger cPanel
-1. Build: `npm run build`
-2. Upload `build/` folder to public_html
-3. Configure `.htaccess` for SPA routing
-
-## 🔌 API Endpoints
-
-### Authentication
-- `POST /api/auth/signup` - Create account (email + password)
-- `POST /api/auth/login` - Login (email + password)
-- `GET /api/users/me` - Get current user
-
-### Analysis
-- `POST /api/analyze` - Analyze Shopify product
-- `POST /api/analyze/checklist` - Generate AI readiness checklist
-- `POST /api/simulate-score` - Simulate scores for description
-
-### Reports
-- `GET /api/reports` - List user's reports
-- `POST /api/reports` - Save new report
-- `GET /api/reports/{id}` - Get report details
-- `DELETE /api/reports/{id}` - Delete report
-- `POST /api/reports/{id}/favorite` - Toggle favorite
-
-### Export
-- `GET /api/reports/{id}/export/json` - Export as JSON
-- `GET /api/reports/{id}/export/text` - Export as text
-- `GET /api/reports/{id}/export/markdown` - Export as Markdown
-- `GET /api/reports/{id}/export/pdf` - Export as PDF
-
-### Advanced
-- `GET /api/reports/{id}/history` - Historical tracking
-- `GET /api/benchmark/category?category=electronics` - Category benchmarks
-- `POST /api/contact` - Contact form
-
-## 🎨 React Components
-
-```
-App (Main)
-├── ErrorBoundary (Error handling)
-├── LoginForm (Authentication)
-├── LandingPage (Marketing home)
-├── Dashboard (Report management)
-│   └── LoadingSkeleton (Loading state)
-├── Analysis View
-│   ├── ScoreCard (4 metrics display)
-│   ├── IssuesList (Problems detected)
-│   ├── AIPerception (AI agent view)
-│   ├── BenchmarkComparison (vs category)
-│   ├── BeforeAfter (Description preview)
-│   ├── AIReadinessChecklist (10-point checklist)
-│   └── RecommendationActions (AI suggestions)
-├── Report Detail
-│   ├── ConfidenceExplainer (Why scores)
-│   └── HistoricalTracking (Trends)
-└── ComparisonView (Multi-product)
+3. **Configure environment variables**
+```bash
+cp .env.example .env.local
+# Edit .env.local
 ```
 
-## 📊 Scoring Methodology
-
-### 4-Metric System (AI-Optimized)
-
-**Clarity Score** (0-10)
-- How clearly AI agents understand the product
-- Based on: title clarity, description readability, structure
-- Ideal: Clear attributes, specific benefits
-
-**Trust Score** (0-10)
-- Legitimacy and quality signals
-- Based on: reviews, return policy, warranty
-- Ideal: Social proof, risk mitigation
-
-**Completeness Score** (0-10)
-- Information availability
-- Based on: description length, specs, images
-- Ideal: Comprehensive without fluff
-
-**Structure Score** (0-10)
-- Content organization for AI readability
-- Based on: bullet points, paragraphs, formatting
-- Ideal: Scannable, well-formatted
-
-**Overall Score** = Average of 4 metrics
-
-### Score Interpretation
-- **8-10**: Excellent - likely ranks well in AI recommendations
-- **7-8**: Good - strong baseline with minor tweaks
-- **6-7**: Average - optimization opportunities
-- **4-6**: Below average - significant issues
-- **<4**: Critical - blocking AI recommendations
-
-## 🤖 AI Features
-
-### Powered by Google Gemini 1.5 Flash
-- Fast inference (suitable for Render free tier)
-- Free tier availability
-- Good at structured product analysis
-
-### Smart Retry Logic
-- 3 automatic retries with exponential backoff
-- 1s → 2s → 4s delays
-- Handles rate limiting gracefully
-
-### AI Readiness Checklist
-Validates 10 key criteria:
-1. Product title descriptive
-2. Description 150-300 words
-3. Has customer reviews
-4. Has return policy
-5. Has shipping info
-6. 3+ product images
-7. Price clearly listed
-8. Structured formatting
-9. Searchable keywords
-10. FAQ section
-
-## 🔐 Security
-
-- **JWT Authentication** - Token-based access
-- **Bcrypt Password Hashing** - Secure password storage
-- **CORS Protection** - Whitelisted domains only
-- **Pydantic Validation** - Type-safe inputs
-- **SQL Injection Protection** - Parameterized queries (SQLAlchemy)
-- **Environment Secrets** - Never in source code
-
-## 🚢 Production Considerations
-
-### Performance
-- SQLAlchemy connection pooling (5 pool size, 10 overflow)
-- Database index on `user_id` and `product_url`
-- Lazy loading for related objects
-- Frontend code splitting ready
-
-### Monitoring
-- Error logging on backend
-- Render error tracking
-- Client-side error boundaries
-
-### Rate Limiting
-- Shopify scraper: 10s timeout, 3 max retries
-- Gemini API: 3 retries with backoff
-- Request validation on all endpoints
-
-### Scalability
-- Stateless FastAPI design
-- Database-agnostic ORM (supports PostgreSQL)
-- Horizontal scaling ready
-
-## 📈 File Structure
-
-```
-QURLY/
-├── backend/
-│   ├── app/
-│   │   ├── __init__.py
-│   │   ├── main.py              # FastAPI app + routes
-│   │   ├── database.py          # SQLAlchemy setup
-│   │   ├── config.py            # Settings management
-│   │   ├── auth.py              # Auth schemas + utilities
-│   │   ├── models.py            # ORM models
-│   │   ├── schemas.py           # Pydantic schemas
-│   │   ├── endpoints.py         # API routes
-│   │   └── modules/             # Core business logic
-│   │       ├── shopify_scraper.py      # Product scraping
-│   │       ├── nlp_analyzer.py         # Text analysis
-│   │       ├── advanced_nlp.py         # Advanced NLP
-│   │       ├── scoring_engine.py       # Scoring logic
-│   │       ├── explainability.py       # Score reasoning
-│   │       ├── gemini_insights.py      # AI suggestions
-│   │       └── report_generator.py     # Export formats
-│   ├── requirements.txt
-│   ├── run.py
-│   └── .env.example
-│
-├── frontend/
-│   ├── public/
-│   │   └── index.html
-│   ├── src/
-│   │   ├── App.js
-│   │   ├── App.css
-│   │   ├── index.js
-│   │   ├── index.css
-│   │   └── components/
-│   │       ├── ErrorBoundary.js         # Error handling
-│   │       ├── LoadingSkeleton.js       # Loading UI
-│   │       ├── LoginForm.js             # Auth UI
-│   │       ├── Dashboard.js             # Report list
-│   │       ├── ScoreCard.js             # Score display
-│   │       ├── IssuesList.js            # Issues UI
-│   │       ├── AIPerception.js          # AI view
-│   │       ├── BenchmarkComparison.js   # Benchmarks
-│   │       ├── BeforeAfter.js           # Description preview
-│   │       ├── AIReadinessChecklist.js  # Checklist
-│   │       ├── RecommendationActions.js # Suggestions
-│   │       ├── ConfidenceExplainer.js   # Score reasons
-│   │       ├── HistoricalTracking.js    # Trends
-│   │       ├── RewriteModal.js          # Modal
-│   │       ├── ComparisonView.js        # Comparison
-│   │       └── LandingPage.js           # Home page
-│   ├── package.json
-│   └── .env.example
-│
-├── README.md
-├── DECISION_LOG.md
-└── .env.example
-```
-
-## 🚀 Getting Started
-
-1. **Clone & Setup**: Follow setup instructions above
-2. **Get API Key**: [Google Gemini API](https://makersuite.google.com)
-3. **Test**: Navigate to http://localhost:3000
-4. **Deploy**: See production deployment section
-
-## 📝 Environment Variables
-
-### Backend (`.env`)
-```
-# Database (choose one)
-DATABASE_URL=sqlite:///./qurly.db
-# OR
-DATABASE_URL=postgresql+psycopg2://user:pass@host:5432/db
-
-# APIs
-GEMINI_API_KEY=your_api_key
-
-# Security
-SECRET_KEY=min-32-characters
-JWT_SECRET_KEY=min-32-characters
-JWT_ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=10080
-
-# CORS
-FRONTEND_URL=http://localhost:3000
-BACKEND_URL=http://localhost:8000
-
-# Environment
-ENVIRONMENT=development
-DEBUG=true
-```
-
-### Frontend (`.env`)
-```
+Required environment variables:
+```env
 REACT_APP_API_URL=http://localhost:8000
 ```
 
-## 🎓 Key Design Decisions
-
-See [DECISION_LOG.md](./DECISION_LOG.md) for detailed architectural choices.
-
-**Highlights**:
-- ✅ Gemini 1.5 Flash over OpenAI (free tier, fast)
-- ✅ SQLAlchemy ORM (database agnostic)
-- ✅ JWT auth (stateless, scalable)
-- ✅ Supabase (free tier doesn't delete data)
-- ✅ React hooks (simple state management)
-
-## 📊 Usage Example
-
+4. **Start the development server**
 ```bash
-# 1. Analyze a product
-curl -X POST http://localhost:8000/api/analyze?url=https://example.myshopify.com/products/...
+npm start
+```
 
-# 2. Response includes:
+Frontend will be available at `http://localhost:3000`
+
+---
+
+## 📚 API Documentation
+
+### Authentication Endpoints
+
+#### POST `/api/auth/signup`
+Create a new user account
+```json
 {
+  "email": "user@example.com",
+  "username": "johndoe",
+  "password": "securepassword123"
+}
+```
+
+#### POST `/api/auth/login`
+Login with email and password
+```json
+{
+  "email": "user@example.com",
+  "password": "securepassword123"
+}
+```
+
+### Analysis Endpoints
+
+#### POST `/api/analyze`
+Analyze a Shopify product URL
+```
+POST /api/analyze?url=https://store.myshopify.com/products/example
+```
+
+Returns:
+```json
+{
+  "url": "...",
+  "product_data": {...},
   "scores": {
-    "clarity_score": 7.2,
-    "trust_score": 6.8,
-    "completeness_score": 7.5,
-    "structure_score": 7.1,
-    "overall_score": 7.15
+    "clarity": 7.5,
+    "trust": 6.2,
+    "completeness": 8.1,
+    "structure": 7.0,
+    "overall": 72.0
   },
   "issues": [...],
-  "ai_perception": {...},
+  "ai_perception": "...",
+  "confidence_scores": {...},
   "gemini_insights": {...}
 }
 ```
 
-## 🧪 Testing
-
-```bash
-# Backend tests (if added)
-cd backend && pytest
-
-# Frontend tests
-cd frontend && npm test
+#### POST `/api/analyze/checklist`
+Get AI readiness checklist
+```json
+{
+  "description": "Product description text",
+  "product_data": {...}
+}
 ```
 
-## 📞 Support
+#### POST `/api/simulate-score`
+Simulate scores for a new description
+```json
+{
+  "description": "New optimized description",
+  "product_data": {...}
+}
+```
 
-- **Email**: Use contact form in app
-- **Docs**: See inline code comments
-- **Issues**: Submit via app contact form
+### Report Management Endpoints
 
-## 🎯 Roadmap
+#### GET `/api/reports`
+List all saved reports for authenticated user
 
-### Current (Phase 1 - MVP)
-- ✅ Product analysis
-- ✅ AI scoring
-- ✅ Gemini suggestions
-- ✅ Reports export
-- ✅ Historical tracking
+#### POST `/api/reports`
+Save a new analysis report
 
-### Future (Phase 2)
-- [ ] Video product analysis
-- [ ] Multi-platform scraping
-- [ ] Competitor analysis
-- [ ] A/B testing
-- [ ] Shopify webhook sync
-- [ ] Bulk uploads
-- [ ] Team collaboration
+#### GET `/api/reports/{id}`
+Get specific report details
 
-## 📄 License
+#### DELETE `/api/reports/{id}`
+Delete a report
 
-MIT - See LICENSE file
+#### POST `/api/reports/{id}/favorite`
+Toggle favorite status
 
-## 🙏 Acknowledgments
+#### GET `/api/reports/{id}/export/{format}`
+Export report (formats: json, text, markdown, pdf)
 
-- Kasparro Agentic Commerce Hackathon
-- Google Gemini API team
-- Supabase and Render for free tiers
+### Benchmark Endpoints
+
+#### GET `/api/benchmark/category?category=electronics`
+Get synthetic benchmark data for a category
+
+### Contact Endpoint
+
+#### POST `/api/contact`
+Submit contact form
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "message": "Your message here"
+}
+```
 
 ---
 
-**Built with ❤️ for the Kasparro Agentic Commerce Hackathon**
+## 🛠️ Tech Stack
 
-*Track 5: AI Representation Optimizer*  
-*Submission Date: April 30, 2026*
+### Backend
+- **Framework**: FastAPI 0.104+
+- **Database**: PostgreSQL (Supabase)
+- **ORM**: SQLAlchemy 2.0
+- **Authentication**: JWT (PyJWT)
+- **Password Hashing**: Passlib with bcrypt
+- **NLP**: TextBlob, NLTK
+- **AI**: Google Gemini API (gemini-1.5-flash)
+- **Web Scraping**: BeautifulSoup4, Requests
+- **PDF Generation**: ReportLab
+- **Deployment**: Render
 
-- **Frontend**: React, Tailwind CSS
-- **Scraping**: BeautifulSoup4
+### Frontend
+- **Framework**: React 18
+- **HTTP Client**: Axios
+- **Icons**: React Icons (Feather Icons)
+- **Styling**: CSS3 (Custom)
+- **Deployment**: Hostinger (cPanel)
 
-## 📊 Scoring System
+---
 
-Score breakdown:
-- **Clarity** (25%): How clear and readable is the description?
-- **Trust** (25%): How trustworthy? (reviews, policies, certifications)
-- **Completeness** (30%): How complete? (specs, images, FAQs, policies)
-- **Structure** (20%): How well-structured? (formatting, bullet points)
+## 🎨 Key Modules
+
+### 1. Shopify Scraper (`shopify_scraper.py`)
+- Extracts product data from Shopify URLs
+- Primary: JSON API endpoint (`.json`)
+- Fallback: HTML scraping with BeautifulSoup
+- Handles 403/404 errors gracefully
+- 10-second timeout with retry logic
+
+### 2. NLP Analyzer (`nlp_analyzer.py` + `advanced_nlp.py`)
+- Readability analysis (Flesch Reading Ease, Flesch-Kincaid Grade)
+- Sentiment analysis
+- Keyword extraction
+- Spam detection
+- Bullet point detection
+- Trust signal identification
+
+### 3. Scoring Engine (`scoring_engine.py`)
+- **Clarity Score** (0-10): Readability, paragraph length, structure
+- **Trust Score** (0-10): Reviews, ratings, policies, trust signals
+- **Completeness Score** (0-10): Description length, images, FAQs
+- **Structure Score** (0-10): Bullet points, formatting, grade level
+- **Overall Score** (0-100): Weighted average
+
+### 4. Gemini Insights (`gemini_insights.py`)
+- AI-powered optimization suggestions
+- Description rewriting
+- Competitor analysis
+- Retry logic with exponential backoff (3 retries)
+- Uses `gemini-1.5-flash` model
+
+### 5. Report Generator (`report_generator.py`)
+- Export formats: JSON, Text, Markdown, PDF
+- Includes scores, issues, recommendations
+- Professional PDF layout with ReportLab
+
+---
+
+## 📊 Scoring Methodology
+
+### Clarity Score (0-10)
+- Flesch Reading Ease (60-80 optimal)
+- Average paragraph length (20-30 words)
+- Bullet point usage
+- Keyword diversity
+
+### Trust Score (0-10)
+- Customer reviews count
+- Average rating (4.5+ ideal)
+- Return policy presence
+- Shipping policy presence
+- Warranty information
+- Trust indicators in text
+
+### Completeness Score (0-10)
+- Description length (150-300 words optimal)
+- Image count (5+ ideal)
+- FAQ section presence
+- Policy completeness
+
+### Structure Score (0-10)
+- Bullet point ratio
+- Paragraph consistency
+- Grade level appropriateness (6-8 ideal)
+
+### Overall Score (0-100)
+Weighted average:
+- Clarity: 25%
+- Trust: 25%
+- Completeness: 30%
+- Structure: 20%
+
+---
+
+## 🔒 Security
+
+- **Password Hashing**: Bcrypt with salt
+- **JWT Tokens**: HS256 algorithm, 7-day expiration
+- **CORS**: Configured for production domains
+- **Input Validation**: Pydantic schemas
+- **SQL Injection**: Protected by SQLAlchemy ORM
+- **Rate Limiting**: Configurable (100 requests/minute)
+
+---
+
+## 🚢 Deployment
+
+### Backend (Render)
+1. Create new Web Service on Render
+2. Connect GitHub repository
+3. Set environment variables
+4. Deploy command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+
+### Frontend (Hostinger cPanel)
+1. Build production bundle: `npm run build`
+2. Upload `build/` contents to public_html
+3. Configure `.htaccess` for React Router
+
+### Database (Supabase)
+1. Create new project on Supabase
+2. Copy connection string
+3. Update `DATABASE_URL` in backend `.env`
+4. Run migrations: `alembic upgrade head`
+
+---
+
+## 📹 Demo Video
+
+[🎥 Watch Demo Video](https://youtu.be/your-demo-video)
+
+**Demo Flow:**
+1. Landing page overview
+2. User signup/login
+3. Product URL analysis
+4. Score breakdown explanation
+5. AI readiness checklist
+6. Gemini-powered rewrite
+7. Before/after comparison
+8. Save to dashboard
+9. Historical tracking
+10. Export report
+
+---
 
 ## 🤝 Contributing
 
-This is a solo project. Contributions welcome!
+Contributions are welcome! Please follow these steps:
 
-## 📜 License
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-MIT
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **Kasparro Agentic Commerce Hackathon** - Track 5: AI Representation Optimizer
+- **Google Gemini API** - AI-powered insights
+- **Supabase** - PostgreSQL hosting
+- **Render** - Backend deployment
+- **Hostinger** - Frontend hosting
+
+---
+
+## 📧 Contact
+
+- **Email**: support@qurly.io
+- **Website**: [qurly.io](https://qurly.io)
+- **GitHub**: [@yourusername](https://github.com/yourusername)
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] Multi-language support
+- [ ] Shopify app integration
+- [ ] Real-time collaboration
+- [ ] A/B testing framework
+- [ ] Chrome extension
+- [ ] Bulk product analysis
+- [ ] API rate limiting dashboard
+- [ ] Webhook notifications
+- [ ] Advanced analytics dashboard
+- [ ] Competitor tracking
+
+---
+
+**Built with ❤️ for e-commerce merchants navigating the AI-first future**

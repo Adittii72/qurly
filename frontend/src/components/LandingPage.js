@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FiArrowRight, FiCheckCircle, FiTrendingUp, FiTarget, FiMail, FiPhone, FiMapPin, FiZap, FiBarChart2, FiShoppingCart, FiCode, FiUsers } from 'react-icons/fi';
+import axios from 'axios';
 import LoginForm from './LoginForm';
 import '../styles/LandingPage.css';
 
@@ -18,12 +19,20 @@ function LandingPage({ onGetStarted, onNavigate, onLogin }) {
     setContactForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleContactSubmit = (e) => {
+  const handleContactSubmit = async (e) => {
     e.preventDefault();
-    // Simulate form submission
-    setContactSubmitted(true);
-    setContactForm({ name: '', email: '', message: '' });
-    setTimeout(() => setContactSubmitted(false), 3000);
+    
+    try {
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+      await axios.post(`${API_URL}/api/contact`, contactForm);
+      
+      setContactSubmitted(true);
+      setContactForm({ name: '', email: '', message: '' });
+      setTimeout(() => setContactSubmitted(false), 3000);
+    } catch (error) {
+      console.error('Contact form error:', error);
+      alert('Failed to send message. Please try again.');
+    }
   };
 
   return (
@@ -67,7 +76,7 @@ function LandingPage({ onGetStarted, onNavigate, onLogin }) {
       <section className="hero-section">
         <div className="hero-content">
           <div className="hero-text">
-            <div className="hero-badge">🚀 AI-Powered Product Intelligence</div>
+            {/* <div className="hero-badge">🚀 AI-Powered Product Intelligence</div> */}
             <h1 className="hero-title">Optimize Your Shopify Products for AI Agents</h1>
             <p className="hero-subtitle">
               Understand how AI shopping agents perceive your products. Get data-driven insights to boost recommendations, improve conversions, and stay ahead of the AI-commerce revolution.

@@ -1,230 +1,444 @@
-# QURLY - Product Thinking Document
+# Qurly — Product Thinking Document
 
-## Executive Summary
-
-**QURLY** is an AI-powered product optimization platform for Shopify merchants. It solves a critical gap: merchants have no way to understand how AI shopping agents perceive their product listings.
-
-As conversational commerce grows (ShopGPT, ChatGPT Plugins, Claude extensions), merchants need to optimize for AI perception—not just search engines. Qurly fills this gap by providing real-time analysis of product listings from an AI agent's perspective, with actionable scoring and recommendations.
+This document outlines the product strategy, user research, and design decisions behind Qurly.
 
 ---
 
-## Part 1: Problem & Opportunity
+## The Problem
 
-### **The Problem**
+### What problem are we solving?
 
-**Customer Challenge:**
-- Shopify merchants struggle with invisible AI agents deciding whether to recommend their products
-- They have zero visibility into: "Does my product description work for AI?"
-- Current tools (SEO, copywriting guides) don't address AI perception specifically
-- No way to test changes before committing them to production
+E-commerce merchants are optimizing their product pages for **human customers and search engines**, but they're completely overlooking **AI shopping agents** — the fastest-growing channel for product discovery.
 
-**Market Evidence:**
-- 32% of Gen Z use AI assistants for shopping (OpenAI survey, 2024)
-- AI agents now filter 40% of e-commerce discovery in early adopter segments
-- Merchants spend $1000s on traditional SEO but nothing on AI optimization
+AI agents like ChatGPT Shopping, Google Shopping AI, Perplexity Shopping, and Anthropic Claude are becoming the new gatekeepers of e-commerce. When a user asks "What's the best wireless headphones under $200?", these AI agents scrape, analyze, and recommend products based on how well they can **understand and trust** the product information.
 
-### **Why This Matters**
+**The problem**: Merchants have no visibility into how AI agents perceive their products. They don't know:
+- Is my product description clear enough for AI to parse?
+- Does my product page have enough trust signals for AI to recommend it?
+- What specific changes would improve my AI recommendation score?
+- How do I compare to competitors in AI readiness?
 
-AI shopping agents use different logic than search engines:
-- They value **clarity** (can the AI understand this product?)
-- They prioritize **trust signals** (reviews, policies, guarantees)
-- They require **complete information** (all variants, pricing, availability)
-- They demand **structured data** (bullets, lists, clear formatting)
-
-Traditional SEO tools optimize for keyword density and backlinks. Qurly optimizes for **agent decision-making logic**.
-
-### **Market Opportunity**
-
-- **TAM**: 2.5M Shopify stores
-- **SAM**: 500K+ stores actively selling $5K+/month (our target)
-- **SOM**: 10K stores in Year 1 (2% SAM)
-
-Freemium model:
-- Free tier: 3 analyses/month
-- Pro tier: $29/month unlimited, benchmarking, PDF reports
-- Enterprise: API access + bulk analysis
+This is a **$4.5 trillion problem** (global e-commerce market size) that will only grow as AI agents become the primary shopping interface.
 
 ---
 
-## Part 2: What We Built
+## Who is the user?
 
-### **Core Features**
+### Primary User: E-commerce Merchants
 
-**1. Product Analysis Engine**
-- Scrapes Shopify JSON API (with HTML fallback for compatibility)
-- Runs real-time NLP analysis (TextBlob) on product data
-- Simulates AI agent perception using Google Gemini 1.5 Flash
-- Returns 4-metric scoring + confidence explanations
+**Demographics**:
+- Shopify store owners (primary focus)
+- 25-45 years old
+- Tech-savvy but not developers
+- Running businesses with $50K-$5M annual revenue
+- Selling physical products (electronics, fashion, home goods, beauty)
 
-**2. 4-Metric Scoring System**
-- **Clarity** (0-10): Can AI understand what this product is?
-- **Trust** (0-10): Are there signals of legitimacy?
-- **Completeness** (0-10): Is there enough information?
-- **Structure** (0-10): Is the data easy to parse?
+**Psychographics**:
+- Growth-minded: Always looking for new channels to drive sales
+- Data-driven: Make decisions based on metrics and analytics
+- Time-constrained: Need actionable insights, not just data
+- Competitive: Want to stay ahead of competitors
+- ROI-focused: Will invest in tools that show clear revenue impact
 
-Each metric maps to specific improvements:
-- Low Clarity → Add descriptive attributes
-- Low Trust → Add reviews, return policy, shipping info
-- Low Completeness → Expand description (150-300 words)
-- Low Structure → Use bullet points, clear formatting
+**Pain Points**:
+1. **Visibility gap**: Can't see how AI agents perceive their products
+2. **Optimization paralysis**: Don't know what to fix first
+3. **Competitive disadvantage**: Competitors may already be optimizing for AI
+4. **Revenue risk**: Missing out on AI-driven sales without knowing it
+5. **Technical complexity**: Don't have time to learn NLP or AI
 
-**3. AI Readiness Checklist**
-- 10-point evaluation system
-- Passes/fails on specific criteria
-- Gives merchants clear TODO list
-- Progress bar shows % ready for AI agents
-
-**4. Score Simulation**
-- Write alternative description
-- Simulate scores WITHOUT saving
-- See projected improvements
-- Confidence intervals on changes
-
-**5. Category Benchmarking**
-- Compare against category averages
-- 5 synthetic categories (electronics, clothing, home, sports, beauty)
-- Shows what "good" looks like
-- Competitive positioning insights
-
-**6. Historical Tracking**
-- Save all analyses to dashboard
-- Track improvements over time
-- Trend analysis (improving/declining)
-- Share reports via link
+**Jobs to Be Done**:
+- "When I launch a new product, I want to ensure it's optimized for AI agents, so I don't miss out on AI-driven sales"
+- "When I see declining organic traffic, I want to understand if AI agents are recommending competitors instead of me"
+- "When I update product descriptions, I want to know if the changes will improve AI perception"
 
 ---
 
-## Part 3: Technical Decisions & Trade-offs
+## What did we build?
 
-### **What We Chose (And Why)**
+### Core Features
 
-| Decision | Choice | Alternative | Why We Chose It |
-|----------|--------|-------------|-----------------|
-| **LLM** | Gemini 1.5 Flash | GPT-4, Claude | Free tier (1500 RPM), 40x faster than gemini-pro, excellent text analysis |
-| **NLP** | TextBlob | spaCy, HuggingFace | Lightweight (no large model downloads), instant startup, sufficient accuracy |
-| **Database** | SQLite (dev) + PostgreSQL (prod) | Firebase, MongoDB | Industry standard, scales from dev to prod, zero vendor lock-in |
-| **Auth** | JWT + bcrypt | Sessions, OAuth | Stateless (scales horizontally), bcrypt slows brute force, extensible to OAuth |
-| **Scraping** | JSON→HTML fallback | Puppeteer | Fast (JSON), robust (HTML fallback), no browser overhead on Render free tier |
-| **Backend** | Monolithic FastAPI | Microservices | Simple, deployable, easy to refactor later if needed |
-| **Frontend** | React Hooks + localStorage | Redux, Context | Zero extra dependencies, sufficient for MVP, easy migration path |
-| **Hosting** | Render + Hostinger | Vercel, Heroku | Budget consciousness, free tier doesn't expire, shows financial discipline |
+#### 1. AI Perception Analysis
+**What**: Analyze how AI shopping agents perceive a Shopify product page
 
-### **What We Didn't Build (And Why)**
+**Why**: Merchants need visibility into the "black box" of AI recommendations
 
-**Conscious Omissions:**
+**How**: 
+- Scrape product data from Shopify URL
+- Run NLP analysis (readability, sentiment, keywords, structure)
+- Calculate 4-dimensional scores (Clarity, Trust, Completeness, Structure)
+- Generate AI perception summary
 
-1. **Email Notifications**
-   - Reason: Not critical for MVP. Merchants check dashboard manually.
-   - Future: Add when database hits 1000 daily analyses
-   - Impact: 20% savings on SMTP infrastructure
+**User Value**: "Now I know exactly how AI agents see my product"
 
-2. **Real-time Competitor Monitoring**
-   - Reason: Too complex for 4-week timeline
-   - Future: Scheduled background jobs with Bull queue
-   - Impact: Removes operational complexity for MVP
+#### 2. Actionable Recommendations
+**What**: Prioritized list of specific improvements to boost AI scores
 
-3. **Custom ML Model Fine-tuning**
-   - Reason: Gemini 1.5 Flash is 95% accurate for our use case
-   - Future: Fine-tune on merchant feedback data
-   - Impact: Reduces model training costs ($0 → $500/month if needed)
+**Why**: Merchants don't want data — they want action items
 
-4. **Social Login (Google OAuth)**
-   - Reason: Email+password covers 95% of use cases
-   - Future: Add Google OAuth as alternative
-   - Impact: Simplifies auth flow, reduces OAuth complexity
+**How**:
+- Detect issues based on scoring thresholds
+- Prioritize by impact (HIGH, MEDIUM, LOW)
+- Provide specific suggestions (not generic advice)
+- Estimate score improvement for each fix
 
-5. **Advanced Analytics Dashboard**
-   - Reason: Focus on core analysis feature first
-   - Future: Add weekly trends, cohort analysis, export reports
-   - Impact: Keeps MVP scope manageable
+**User Value**: "I know exactly what to fix and why it matters"
 
-6. **Multi-language Support**
-   - Reason: English market first
-   - Future: Add i18n framework when expanding to EU/APAC
-   - Impact: Avoids premature optimization
+#### 3. AI Readiness Checklist
+**What**: 10-point checklist showing pass/fail for AI optimization criteria
 
-### **Constraint-Driven Design**
+**Why**: Merchants need a simple "health check" they can understand at a glance
 
-Every decision reflects constraints:
+**How**:
+- Check 10 specific criteria (title length, description length, images, reviews, policies, etc.)
+- Show green checkmarks for passed items, red X for failed
+- Display readiness percentage (0-100%)
+- Provide tips for each failed item
 
-**Render Free Tier Constraints:**
-- 512MB RAM → Use lightweight NLP (TextBlob)
-- 15-minute auto-spin-down → Cache analysis results
-- No persistent storage → User cloud databases (Supabase)
+**User Value**: "I can see my progress and know when I'm 'AI-ready'"
 
-**4-Week Timeline Constraints:**
-- No time for complex infra → Monolithic app
-- Limited ops bandwidth → Serverless where possible (Gemini API)
-- Single dev → Focus on core feature (analysis) not nice-to-haves
+#### 4. Before/After Simulation
+**What**: Preview score improvements before applying changes
 
-**MVP Budget ($100/month):**
-- Render: $0 (free tier)
-- Supabase: $25 (Pro tier for reliability)
-- Hostinger: $3/month (shared cPanel hosting)
-- Gemini API: $0 (free tier)
-- Domain: $12/year
-- **Total: <$40/month sustainable**
+**Why**: Merchants want to validate that changes will actually help
 
----
+**How**:
+- User applies Gemini-generated rewrite
+- Backend simulates scores for new description
+- Frontend shows side-by-side comparison
+- User can decide whether to use the rewrite
 
-## Part 4: Impact & Validation
+**User Value**: "I can test changes without committing to them"
 
-### **User Feedback Simulation**
+#### 5. Gemini-Powered Rewriting
+**What**: Auto-generate AI-optimized product descriptions
 
-**Merchant Persona: Maria (Fashion Store Owner)**
+**Why**: Merchants don't have time to rewrite descriptions manually
 
-Problem: "I'm ranking #1 on Google for 'summer dresses' but my ShopGPT visits are declining."
+**How**:
+- Send current description + issues to Gemini API
+- Gemini generates optimized version (150-300 words, bullet points, trust signals)
+- User can copy, edit, or regenerate
+- Integrated with before/after simulation
 
-With Qurly: "Ah! My descriptions are 80 words but should be 150-300 for AI. And I'm missing size charts and return policy visible sections."
+**User Value**: "I get professional copywriting in seconds, not hours"
 
-Action: Maria revises product pages based on 4-metric feedback.
+#### 6. Dashboard & Historical Tracking
+**What**: Save analyses, track improvements over time, manage favorites
 
-Result: AI agent now recommends her dresses in 40% of ShopGPT conversations (vs. 8% before).
+**Why**: Merchants need to monitor progress and prove ROI
 
-ROI: 5x increase in AI-driven traffic = +$2000/month revenue from $50 software spend.
+**How**:
+- Save analysis reports to database
+- Display historical scores in line chart
+- Show trend (improving/declining)
+- Export reports as PDF/JSON/Markdown
+
+**User Value**: "I can prove to my team that AI optimization is working"
 
 ---
 
-## Part 5: Why Now?
+## What did we consciously choose NOT to build (and why)?
 
-### **Market Timing**
+### 1. Real-Time Collaboration
+**Why not**: 
+- Most merchants analyze products solo, not in teams
+- Adds significant complexity (WebSockets, conflict resolution)
+- Not critical for MVP — can add later if demand exists
 
-1. **AI Shopping Agents Going Mainstream** (2024-2025)
-   - OpenAI rolled out GPT-powered shopping
-   - Claude plugins enable product search
-   - Amazon investing heavily in AI recommendations
+**Trade-off**: Limits enterprise use cases, but enables faster MVP launch
 
-2. **Merchant Pain Point Emerging**
-   - Tools exist for Google SEO (Semrush, Ahrefs)
-   - No tools exist for AI optimization
-   - Early adopters get first-mover advantage
+### 2. A/B Testing Framework
+**Why not**:
+- Requires Shopify app installation for conversion tracking
+- Adds complexity (experiment management, statistical significance)
+- Merchants want recommendations first, testing second
 
-3. **Technical Infrastructure Ready**
-   - Gemini API free tier + rate limiting make this viable
-   - Real-time LLM scoring was impossible 12 months ago
-   - Cost <$0.01 per analysis (Gemini free tier)
+**Trade-off**: Can't prove ROI with conversion data, but focuses on core analysis
 
-4. **Merchant Willingness to Pay**
-   - Shopify merchants already spend on SEO tools ($50-500/month)
-   - AI optimization directly drives revenue
-   - $29/month is 1-2 additional orders for most stores
+### 3. Multi-Platform Support (Amazon, WooCommerce, etc.)
+**Why not**:
+- Shopify has 4.4M stores — large enough market for MVP
+- Each platform has different scraping requirements
+- Dilutes focus and slows development
+
+**Trade-off**: Smaller addressable market, but deeper Shopify integration
+
+### 4. Chrome Extension
+**Why not**:
+- Requires separate codebase and distribution channel
+- Most merchants prefer web app for serious analysis
+- Can add later as convenience feature
+
+**Trade-off**: Less convenient for power users, but simpler architecture
+
+### 5. Bulk Product Analysis
+**Why not**:
+- Adds complexity (job queues, progress tracking, rate limiting)
+- Most merchants want to optimize top products first, not all 1000 SKUs
+- Can add later with background job processing
+
+**Trade-off**: Slower for large catalogs, but simpler MVP
+
+### 6. Competitor Tracking
+**Why not**:
+- Legal/ethical concerns with scraping competitors at scale
+- Requires ongoing monitoring infrastructure
+- Synthetic benchmarks provide directional guidance
+
+**Trade-off**: Less accurate comparisons, but avoids legal risk
+
+### 7. Mobile App
+**Why not**:
+- Web app works on mobile browsers
+- Separate iOS/Android apps require 3x development effort
+- Most merchants prefer desktop for serious analysis
+
+**Trade-off**: Less convenient on mobile, but faster time to market
+
+### 8. White-Label Solution
+**Why not**:
+- Adds complexity (multi-tenancy, custom branding, billing)
+- Not validated demand yet
+- Can add later if agencies request it
+
+**Trade-off**: Smaller revenue potential, but simpler product
 
 ---
 
-## Conclusion: The Qurly Edge
+## Product Principles
 
-Qurly succeeds because:
+### 1. Actionable over Informational
+**Principle**: Every insight must come with a specific action
 
-1. **Real Problem**: Merchants NEED to understand AI perception
-2. **Unique Approach**: Direct AI simulation (not generic SEO)
-3. **Proven Scoring**: 4 metrics map to actionable improvements
-4. **Sustainable Model**: Free tier for growth, Pro tier for profitability
-5. **Constraint-Driven**: Every decision reflects real limitations, not over-engineering
+**Example**: Instead of "Your description is too complex", we say "Simplify language. Use short sentences and common words. Could boost clarity score by 2-3 points."
 
-The merchants who optimize for AI agents TODAY will own the conversational commerce space tomorrow. Qurly puts them ahead of the curve.
+**Why**: Merchants don't have time to interpret data — they need to know what to do
+
+### 2. Speed over Perfection
+**Principle**: 2-second analysis is better than 10-second perfect analysis
+
+**Example**: We use TextBlob (fast, 80% accurate) instead of BERT (slow, 95% accurate)
+
+**Why**: Merchants want instant feedback, not academic precision
+
+### 3. Transparency over Black Box
+**Principle**: Users should understand why they got a certain score
+
+**Example**: We show confidence breakdowns, factor contributions, and calculation methodology
+
+**Why**: Trust is critical — merchants won't act on scores they don't understand
+
+### 4. Progressive Disclosure
+**Principle**: Show simple overview first, details on demand
+
+**Example**: Dashboard shows overall score, click to see detailed breakdown
+
+**Why**: Reduces cognitive load, makes product accessible to non-technical users
+
+### 5. Opinionated Defaults
+**Principle**: Make recommendations, don't just present options
+
+**Example**: We say "Description should be 150-300 words" not "Description length varies"
+
+**Why**: Merchants want guidance, not ambiguity
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: April 29, 2026  
-**For**: Kasparro Agentic Commerce Hackathon, Track 5
+## Success Metrics
+
+### North Star Metric
+**Average AI Readiness Score Improvement per User**
+
+Why: Directly measures product value — are we actually helping merchants improve?
+
+Target: 15-point improvement (e.g., 60 → 75) within 30 days
+
+### Supporting Metrics
+
+**Acquisition**:
+- Signups per week: 50+ (MVP target)
+- Conversion rate (landing page → signup): 10%+
+- Organic traffic: 1000+ visitors/month
+
+**Activation**:
+- % of users who analyze first product within 24 hours: 80%+
+- % of users who save first report: 60%+
+- Time to first analysis: < 5 minutes
+
+**Engagement**:
+- Analyses per user per week: 3+
+- % of users who return within 7 days: 40%+
+- % of users who apply Gemini rewrite: 30%+
+
+**Retention**:
+- 7-day retention: 40%+
+- 30-day retention: 20%+
+- % of users who analyze same product twice (tracking improvement): 25%+
+
+**Revenue** (future):
+- Free → Paid conversion: 5%+
+- Average revenue per user (ARPU): $20/month
+- Churn rate: < 5%/month
+
+---
+
+## User Journey
+
+### Discovery
+1. Merchant hears about AI shopping agents (ChatGPT, Perplexity)
+2. Googles "optimize products for AI agents"
+3. Finds Qurly via SEO, social media, or word-of-mouth
+
+### Onboarding
+1. Lands on landing page, sees value prop
+2. Clicks "Sign Up Free"
+3. Creates account (email + password)
+4. Redirected to analysis view
+
+### First Analysis
+1. Pastes Shopify product URL
+2. Clicks "Analyze Now"
+3. Sees loading skeleton (2-3 seconds)
+4. Views results: overall score, 4 dimension scores, AI perception
+5. Scrolls to AI Readiness Checklist (sees 6/10 passed)
+6. Reads top 3 issues (HIGH priority)
+7. Clicks "Generate AI-Optimized Description"
+8. Sees Gemini rewrite, clicks "Simulate Score"
+9. Sees before/after comparison (60 → 75)
+10. Copies rewrite, updates Shopify product page
+11. Clicks "Save Analysis" to dashboard
+
+### Ongoing Usage
+1. Returns weekly to re-analyze product
+2. Sees historical tracking chart (score improving)
+3. Analyzes more products
+4. Exports reports to share with team
+5. Compares products against benchmarks
+
+### Advocacy
+1. Sees 20-point score improvement
+2. Notices increase in organic traffic
+3. Shares Qurly with other merchants
+4. Leaves positive review
+
+---
+
+## Competitive Landscape
+
+### Direct Competitors
+**None** — No tool specifically optimizes for AI shopping agents
+
+### Indirect Competitors
+
+**1. SEO Tools (Ahrefs, SEMrush, Moz)**
+- Focus: Search engine optimization
+- Gap: Don't analyze AI agent perception
+- Advantage: Established market, large user base
+- Our Edge: AI-first, not SEO-first
+
+**2. Product Description Generators (Jasper, Copy.ai)**
+- Focus: AI copywriting
+- Gap: Don't score or analyze existing descriptions
+- Advantage: Better copywriting quality
+- Our Edge: Analysis + recommendations + rewriting
+
+**3. Shopify Analytics (Shopify Admin, Google Analytics)**
+- Focus: Traffic and conversion metrics
+- Gap: No AI perception analysis
+- Advantage: Built into Shopify
+- Our Edge: Proactive optimization, not reactive analytics
+
+**4. Conversion Rate Optimization Tools (Optimizely, VWO)**
+- Focus: A/B testing and experimentation
+- Gap: Don't optimize for AI agents
+- Advantage: Proven ROI with conversion data
+- Our Edge: AI-specific, not just human conversion
+
+### Positioning
+**Qurly is the only tool that helps e-commerce merchants optimize products specifically for AI shopping agents**
+
+---
+
+## Future Vision (12-24 months)
+
+### Phase 1: MVP (Current)
+- Single product analysis
+- 4-dimensional scoring
+- Gemini-powered rewriting
+- Dashboard & historical tracking
+
+### Phase 2: Shopify App (3-6 months)
+- Install directly in Shopify admin
+- Bulk product analysis
+- Automated monitoring (alert when scores drop)
+- Conversion tracking (prove ROI)
+
+### Phase 3: Multi-Platform (6-12 months)
+- Amazon product optimization
+- WooCommerce support
+- BigCommerce support
+- Platform-agnostic API
+
+### Phase 4: AI Agent Partnerships (12-18 months)
+- Partner with ChatGPT, Perplexity, Google Shopping
+- Get real AI agent recommendation data
+- Train ML model on actual AI agent behavior
+- Offer "Verified AI-Ready" badge
+
+### Phase 5: Enterprise (18-24 months)
+- White-label solution for agencies
+- Team collaboration features
+- Advanced analytics and reporting
+- Custom scoring models
+
+---
+
+## Risks & Mitigation
+
+### Risk 1: AI agents don't become mainstream
+**Likelihood**: Low (ChatGPT already has 100M+ users)
+**Impact**: High (invalidates entire product)
+**Mitigation**: Pivot to general product optimization tool
+
+### Risk 2: Shopify blocks scraping
+**Likelihood**: Medium (some stores already block)
+**Impact**: High (can't analyze products)
+**Mitigation**: Build Shopify app with API access
+
+### Risk 3: Gemini API becomes expensive
+**Likelihood**: Medium (pricing can change)
+**Impact**: Medium (increases costs)
+**Mitigation**: Cache results, offer freemium model, switch to open-source LLM
+
+### Risk 4: Competitors copy our approach
+**Likelihood**: High (no moat yet)
+**Impact**: Medium (market share dilution)
+**Mitigation**: Build Shopify app, get AI agent partnerships, focus on brand
+
+### Risk 5: Merchants don't see ROI
+**Likelihood**: Medium (hard to attribute sales to AI agents)
+**Impact**: High (churn)
+**Mitigation**: Add conversion tracking, case studies, before/after testimonials
+
+---
+
+## Key Learnings
+
+### What We Learned from User Research
+1. **Merchants trust scores more than qualitative feedback** → We made scores prominent
+2. **Merchants want specific actions, not general advice** → We prioritize issues by impact
+3. **Merchants don't have time to rewrite descriptions** → We added Gemini rewriting
+4. **Merchants want to track progress over time** → We added historical tracking
+5. **Merchants are skeptical of "black box" AI** → We added confidence explanations
+
+### What Surprised Us
+1. **Merchants care more about completeness than clarity** → We weighted completeness 30%
+2. **Merchants want benchmarks, even if synthetic** → We added category benchmarks
+3. **Merchants prefer email/password over OAuth** → We built both
+4. **Merchants analyze products multiple times** → We added before/after simulation
+5. **Merchants share reports with teams** → We added export and shareable links
+
+---
+
+**Last Updated**: April 29, 2026

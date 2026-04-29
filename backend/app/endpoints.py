@@ -12,7 +12,7 @@ from datetime import datetime
 from app.database import get_db
 from app.models import User, Report, RecommendationHistory, ComparisonReport
 from app.auth import (
-    UserCreate, UserResponse, LoginResponse, LoginRequest, ReportCreateRequest, 
+    UserCreate, UserLogin, UserResponse, LoginResponse, ReportCreateRequest, 
     ReportResponse, ReportDetailResponse, ComparisonRequest, ComparisonResponse,
     create_access_token, verify_token, ContactRequest, SimulateScoreRequest
 )
@@ -42,7 +42,9 @@ def get_token_from_header(authorization: Optional[str] = Header(None)) -> str:
 
 @router.post("/auth/signup", response_model=LoginResponse)
 def signup(user_data: UserCreate, db: Session = Depends(get_db)):
-    """Create new user account"""
+    """Create new user account with password"""
+    from app.auth import hash_password
+    
     # Check if user already exists
     existing_user = db.query(User).filter(User.email == user_data.email).first()
     if existing_user:
@@ -52,10 +54,14 @@ def signup(user_data: UserCreate, db: Session = Depends(get_db)):
     if existing_username:
         raise HTTPException(status_code=400, detail="Username already taken")
     
+    # Hash password
+    password_hash = hash_password(user_data.password)
+    
     # Create new user
     new_user = User(
         email=user_data.email,
         username=user_data.username,
+        password_hash=password_hash,
         google_id=user_data.google_id,
         profile_picture=user_data.profile_picture
     )
@@ -74,11 +80,20 @@ def signup(user_data: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/auth/login", response_model=LoginResponse)
-def login(login_data: LoginRequest, db: Session = Depends(get_db)):
-    """Login with email"""
+def login(login_data: UserLogin, db: Session = Depends(get_db)):
+    """Login with email and password"""
+    from app.auth import verify_password
+    
     user = db.query(User).filter(User.email == login_data.email).first()
     if not user:
-        raise HTTPException(status_code=401, detail="User not found")
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    # Verify password
+    if not user.password_hash:
+        raise HTTPException(status_code=401, detail="Password not set. Please use Google OAuth or reset password")
+    
+    if not verify_password(login_data.password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
     
     token = create_access_token(user.id, user.email)
     

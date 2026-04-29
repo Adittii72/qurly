@@ -1,114 +1,173 @@
 import React from 'react';
 
 /**
- * Loading Skeleton Component
- * Shows animated shimmer effect while content is loading
- * More professional than plain spinner
+ * LoadingSkeleton Component
+ * Displays animated loading placeholders while analysis is running
  */
-const LoadingSkeleton = ({ type = 'card', count = 1 }) => {
-  if (type === 'card') {
-    return (
-      <div style={styles.container}>
-        {Array.from({ length: count }).map((_, i) => (
-          <div key={i} style={styles.skeletonCard}>
-            <div style={{ ...styles.skeleton, height: '200px', marginBottom: '16px' }}></div>
-            <div style={{ ...styles.skeleton, height: '20px', width: '80%', marginBottom: '12px' }}></div>
-            <div style={{ ...styles.skeleton, height: '16px', width: '60%', marginBottom: '12px' }}></div>
-            <div style={styles.skeletonRow}>
-              <div style={{ ...styles.skeleton, height: '16px', width: '30%' }}></div>
-              <div style={{ ...styles.skeleton, height: '16px', width: '30%' }}></div>
-              <div style={{ ...styles.skeleton, height: '16px', width: '30%' }}></div>
-            </div>
-          </div>
-        ))}
+function LoadingSkeleton() {
+  return (
+    <div style={styles.container}>
+      <div style={styles.section}>
+        <div style={styles.skeletonHeader}></div>
+        <div style={styles.skeletonText}></div>
+        <div style={styles.skeletonText}></div>
       </div>
-    );
-  }
 
-  if (type === 'chart') {
-    return (
-      <div style={styles.skeletonCard}>
-        <div style={{ ...styles.skeleton, height: '300px' }}></div>
+      <div style={styles.section}>
+        <div style={styles.skeletonSubheader}></div>
+        <div style={styles.scoresGrid}>
+          <div style={styles.skeletonCard}></div>
+          <div style={styles.skeletonCard}></div>
+          <div style={styles.skeletonCard}></div>
+          <div style={styles.skeletonCard}></div>
+        </div>
       </div>
-    );
-  }
 
-  if (type === 'text') {
-    return (
-      <div style={styles.container}>
-        {Array.from({ length: count }).map((_, i) => (
-          <div key={i} style={{ marginBottom: '12px' }}>
-            <div style={{ ...styles.skeleton, height: '16px', marginBottom: '8px' }}></div>
-            <div style={{ ...styles.skeleton, height: '16px', width: '95%' }}></div>
-          </div>
-        ))}
+      <div style={styles.section}>
+        <div style={styles.skeletonSubheader}></div>
+        <div style={styles.skeletonLarge}></div>
       </div>
-    );
-  }
 
-  if (type === 'list') {
-    return (
-      <div style={styles.container}>
-        {Array.from({ length: count }).map((_, i) => (
-          <div key={i} style={styles.skeletonListItem}>
-            <div style={{ ...styles.skeleton, height: '16px', marginBottom: '8px' }}></div>
-            <div style={{ ...styles.skeleton, height: '14px', width: '80%' }}></div>
-          </div>
-        ))}
+      <div style={styles.section}>
+        <div style={styles.skeletonSubheader}></div>
+        <div style={styles.issuesGrid}>
+          <div style={styles.skeletonIssue}></div>
+          <div style={styles.skeletonIssue}></div>
+          <div style={styles.skeletonIssue}></div>
+        </div>
       </div>
-    );
-  }
 
-  return null;
-};
+      <div style={styles.loadingMessage}>
+        <div style={styles.spinner}></div>
+        <p style={styles.messageText}>Analyzing your product with AI...</p>
+        <p style={styles.messageSubtext}>This may take a few seconds</p>
+      </div>
+    </div>
+  );
+}
 
-const styles = {
-  container: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-    gap: '16px',
-  },
-  skeletonCard: {
-    padding: '16px',
-    backgroundColor: '#fff',
-    borderRadius: '12px',
-    border: '1px solid #e5e7eb',
-  },
-  skeleton: {
-    backgroundColor: '#e5e7eb',
-    borderRadius: '8px',
-    animation: 'shimmer 2s infinite',
-    backgroundImage: 'linear-gradient(90deg, #e5e7eb 0%, #f3f4f6 50%, #e5e7eb 100%)',
-    backgroundSize: '200% 100%',
-  },
-  skeletonRow: {
-    display: 'flex',
-    gap: '12px',
-    justifyContent: 'space-between',
-  },
-  skeletonListItem: {
-    padding: '12px',
-    backgroundColor: '#fff',
-    borderRadius: '8px',
-    border: '1px solid #e5e7eb',
-    marginBottom: '12px',
-  },
-};
-
-// Add CSS animation
-const styleSheet = document.createElement('style');
-styleSheet.textContent = `
+const shimmerAnimation = `
   @keyframes shimmer {
     0% {
-      background-position: 200% 0;
+      background-position: -1000px 0;
     }
     100% {
-      background-position: -200% 0;
+      background-position: 1000px 0;
     }
   }
 `;
-if (document.head) {
-  document.head.appendChild(styleSheet);
+
+const spinnerAnimation = `
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
+// Inject animations into document
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style');
+  style.textContent = shimmerAnimation + spinnerAnimation;
+  document.head.appendChild(style);
 }
+
+const shimmerGradient = 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)';
+
+const styles = {
+  container: {
+    maxWidth: '1200px',
+    margin: '2rem auto',
+    padding: '2rem',
+  },
+  section: {
+    marginBottom: '3rem',
+  },
+  skeletonHeader: {
+    height: '3rem',
+    width: '60%',
+    background: shimmerGradient,
+    backgroundSize: '1000px 100%',
+    animation: 'shimmer 2s infinite',
+    borderRadius: '0.5rem',
+    marginBottom: '1rem',
+  },
+  skeletonSubheader: {
+    height: '2rem',
+    width: '40%',
+    background: shimmerGradient,
+    backgroundSize: '1000px 100%',
+    animation: 'shimmer 2s infinite',
+    borderRadius: '0.5rem',
+    marginBottom: '1.5rem',
+  },
+  skeletonText: {
+    height: '1rem',
+    width: '80%',
+    background: shimmerGradient,
+    backgroundSize: '1000px 100%',
+    animation: 'shimmer 2s infinite',
+    borderRadius: '0.25rem',
+    marginBottom: '0.75rem',
+  },
+  skeletonLarge: {
+    height: '12rem',
+    width: '100%',
+    background: shimmerGradient,
+    backgroundSize: '1000px 100%',
+    animation: 'shimmer 2s infinite',
+    borderRadius: '1rem',
+  },
+  scoresGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gap: '1.5rem',
+  },
+  skeletonCard: {
+    height: '8rem',
+    background: shimmerGradient,
+    backgroundSize: '1000px 100%',
+    animation: 'shimmer 2s infinite',
+    borderRadius: '1rem',
+  },
+  issuesGrid: {
+    display: 'grid',
+    gap: '1rem',
+  },
+  skeletonIssue: {
+    height: '5rem',
+    background: shimmerGradient,
+    backgroundSize: '1000px 100%',
+    animation: 'shimmer 2s infinite',
+    borderRadius: '0.75rem',
+  },
+  loadingMessage: {
+    textAlign: 'center',
+    padding: '3rem 0',
+  },
+  spinner: {
+    width: '3rem',
+    height: '3rem',
+    border: '4px solid #f3f3f3',
+    borderTop: '4px solid #667eea',
+    borderRadius: '50%',
+    animation: 'spin 1s linear infinite',
+    margin: '0 auto 1rem',
+  },
+  messageText: {
+    fontSize: '1.25rem',
+    fontWeight: '600',
+    color: '#1f2937',
+    margin: '0 0 0.5rem',
+  },
+  messageSubtext: {
+    fontSize: '0.95rem',
+    color: '#6b7280',
+    margin: 0,
+  },
+};
 
 export default LoadingSkeleton;

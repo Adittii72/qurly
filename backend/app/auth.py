@@ -39,12 +39,6 @@ class UserLogin(BaseModel):
     password: str
 
 
-class LoginRequest(BaseModel):
-    """Legacy user login request schema (email only)"""
-    email: EmailStr
-    password: Optional[str] = None  # Support both old and new format
-
-
 class UserResponse(BaseModel):
     """User response schema"""
     id: int

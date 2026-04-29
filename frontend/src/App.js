@@ -15,6 +15,8 @@ import ComparisonView from './components/ComparisonView';
 import RecommendationActions from './components/RecommendationActions';
 import LandingPage from './components/LandingPage';
 import ErrorBoundary from './components/ErrorBoundary';
+import LoadingSkeleton from './components/LoadingSkeleton';
+import AIReadinessChecklist from './components/AIReadinessChecklist';
 import './App.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
@@ -264,7 +266,9 @@ function App() {
 
           {/* Main Content */}
           <main className="main-content">
-        {!result ? (
+        {loading ? (
+          <LoadingSkeleton />
+        ) : !result ? (
           <section className="features-section">
             <div className="features-container">
               <h2>How Qurly Works</h2>
@@ -294,6 +298,14 @@ function App() {
             {/* AI Perception Overview */}
             <section className="perception-section">
               <AIPerception perception={result.ai_perception} score={result.scores.overall} />
+            </section>
+
+            {/* AI Readiness Checklist */}
+            <section style={{marginBottom: '2rem'}}>
+              <AIReadinessChecklist 
+                productData={result.product_data}
+                description={result.product_data.description}
+              />
             </section>
 
             {/* Confidence Explainer */}

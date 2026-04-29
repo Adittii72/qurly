@@ -64,7 +64,8 @@ class ScoringEngine:
         elif diversity > 0.5:
             score += 1
         
-        return min(10, round(score, 1))
+        # Clamp between 0-10
+        return max(0, min(10, round(score, 1)))
     
     @staticmethod
     def calculate_trust_score(
@@ -111,7 +112,8 @@ class ScoringEngine:
         elif trust_count >= 1:
             score += 1
         
-        return min(10, round(score, 1))
+        # Clamp between 0-10
+        return max(0, min(10, round(score, 1)))
     
     @staticmethod
     def calculate_completeness_score(
@@ -155,7 +157,8 @@ class ScoringEngine:
         ])
         score += min(3, policies_count)
         
-        return min(10, round(score, 1))
+        # Clamp between 0-10
+        return max(0, min(10, round(score, 1)))
     
     @staticmethod
     def calculate_structure_score(nlp_features: NLPFeatures) -> float:
@@ -189,7 +192,8 @@ class ScoringEngine:
         elif 5 <= grade < 6 or 8 < grade <= 10:
             score += 1
         
-        return min(10, round(score, 1))
+        # Clamp between 0-10
+        return max(0, min(10, round(score, 1)))
     
     @staticmethod
     def calculate_scores(

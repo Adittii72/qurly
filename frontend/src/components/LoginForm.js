@@ -157,9 +157,6 @@ function LoginForm({ onLogin, onLoginSuccess, isSignup = false }) {
               </div>
             </div>
           )}
-              </div>
-            </div>
-          )}
 
           <button
             type="submit"
