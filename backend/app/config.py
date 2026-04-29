@@ -5,7 +5,7 @@ Handles environment variables and app configuration
 
 from pydantic_settings import BaseSettings
 from pydantic import ConfigDict, Field
-from typing import Optional
+from typing import Optional, List
 
 class Settings(BaseSettings):
     """Application settings from environment variables"""
@@ -31,9 +31,11 @@ class Settings(BaseSettings):
     reload: bool = False
     
     # Security
-    secret_key: str = Field(default="dev-secret-key-change-in-prod")
+    secret_key: str = Field(default="dev-secret-key-change-in-prod-min-32-characters")
     
-    # CORS - Keep as simple strings, not lists
+    # CORS - Production domains
+    frontend_url: str = Field(default="http://localhost:3000")
+    backend_url: str = Field(default="http://localhost:8000")
     cors_enabled: bool = True
     cors_credentials: bool = True
     
@@ -49,7 +51,9 @@ class Settings(BaseSettings):
     
     # AI/ML
     gemini_api_key: Optional[str] = Field(default=None)
-    ai_model_name: str = Field(default="gemini-pro")
+    ai_model_name: str = Field(default="gemini-1.5-flash")
+    gemini_max_retries: int = 3
+    gemini_timeout: int = 30
     
     # Cache
     cache_enabled: bool = True
@@ -67,6 +71,7 @@ class Settings(BaseSettings):
     enable_advanced_nlp: bool = True
     enable_pdf_export: bool = True
     enable_multi_product_comparison: bool = True
+    enable_ai_readiness_checklist: bool = True
     
     # Database
     database_url: Optional[str] = Field(default="sqlite:///./qurly.db")
@@ -74,26 +79,43 @@ class Settings(BaseSettings):
     # Authentication
     google_oauth_client_id: Optional[str] = Field(default=None)
     google_oauth_client_secret: Optional[str] = Field(default=None)
-    jwt_secret_key: str = Field(default="dev-jwt-secret-key-change-in-prod")
+    jwt_secret_key: str = Field(default="dev-jwt-secret-key-change-in-prod-min-32-chars")
     jwt_algorithm: str = "HS256"
     jwt_expiration_hours: int = 168  # 7 days
+    
+    def get_cors_origins(self) -> List[str]:
+        """Get CORS allowed origins based on environment"""
+        origins = [
+            "http://localhost:3000",
+            "http://localhost:3001",
+            "http://localhost:3002",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:3001",
+            "http://localhost:8000",
+            "http://127.0.0.1:8000",
+        ]
+        
+        # Add production URLs if configured
+        if self.frontend_url and not self.frontend_url.startswith("http://localhost"):
+            origins.append(self.frontend_url)
+        
+        if self.backend_url and not self.backend_url.startswith("http://localhost"):
+            origins.append(self.backend_url)
+        
+        # Add production Render/Hostinger domains
+        if self.environment == "production":
+            # Frontend on Hostinger (cPanel)
+            if "hostinger" in self.frontend_url.lower() or ".com" in self.frontend_url:
+                origins.append(self.frontend_url)
+            # Backend on Render
+            if "render" in self.backend_url.lower() or "onrender.com" in self.backend_url:
+                origins.append(self.backend_url)
+        
+        return list(set(origins))  # Remove duplicates
 
 # Global settings instance
 settings = Settings()
 
-# Define allowed origins as a constant, not from env vars
-ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://localhost:3002",
-    "http://localhost:3003",
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:3001",
-    "http://127.0.0.1:3002",
-    "http://127.0.0.1:3003",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-    "http://localhost:8001",
-    "http://127.0.0.1:8001",
-]
+# Legacy constant for backwards compatibility
+ALLOWED_ORIGINS = settings.get_cors_origins()
 

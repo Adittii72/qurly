@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiMail, FiUser, FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiMail, FiUser, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
@@ -11,6 +11,8 @@ function LoginForm({ onLogin, onLoginSuccess, isSignup = false }) {
   const [isLoginMode, setIsLoginMode] = useState(!isSignup);
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -23,15 +25,29 @@ function LoginForm({ onLogin, onLoginSuccess, isSignup = false }) {
     try {
       let response;
       if (isLoginMode) {
-        // Login
+        // Login with email and password
         response = await axios.post(`${API_URL}/api/auth/login`, {
-          email
+          email,
+          password
         });
       } else {
-        // Signup
+        // Signup with email, username, and password
+        if (password !== confirmPassword) {
+          setError('Passwords do not match');
+          setLoading(false);
+          return;
+        }
+        
+        if (password.length < 8) {
+          setError('Password must be at least 8 characters');
+          setLoading(false);
+          return;
+        }
+
         response = await axios.post(`${API_URL}/api/auth/signup`, {
           email,
-          username
+          username,
+          password
         });
       }
 
@@ -98,6 +114,49 @@ function LoginForm({ onLogin, onLoginSuccess, isSignup = false }) {
                   required
                   style={styles.input}
                 />
+              </div>
+            </div>
+          )}
+
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Password</label>
+            <div style={styles.inputWrapper}>
+              <FiLock size={18} color="#9A7D5D" />
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+                style={styles.input}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={styles.togglePasswordBtn}
+                title={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <FiEyeOff size={18} color="#9A7D5D" /> : <FiEye size={18} color="#9A7D5D" />}
+              </button>
+            </div>
+          </div>
+
+          {!isLoginMode && (
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Confirm Password</label>
+              <div style={styles.inputWrapper}>
+                <FiLock size={18} color="#9A7D5D" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm your password"
+                  required
+                  style={styles.input}
+                />
+              </div>
+            </div>
+          )}
               </div>
             </div>
           )}
@@ -225,6 +284,15 @@ const styles = {
     outline: 'none',
     fontSize: '1rem',
     color: '#2C2C2C',
+  },
+  togglePasswordBtn: {
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    padding: '0.25rem',
+    display: 'flex',
+    alignItems: 'center',
+    transition: 'all 0.2s ease',
   },
   submitBtn: {
     width: '100%',

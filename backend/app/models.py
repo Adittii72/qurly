@@ -12,8 +12,9 @@ class User(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
-    google_id = Column(String, unique=True, index=True, nullable=True)
     username = Column(String, unique=True, index=True)
+    password_hash = Column(String, nullable=True)  # For email/password auth
+    google_id = Column(String, unique=True, index=True, nullable=True)
     profile_picture = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

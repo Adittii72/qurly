@@ -14,7 +14,7 @@ from app.models import User, Report, RecommendationHistory, ComparisonReport
 from app.auth import (
     UserCreate, UserResponse, LoginResponse, LoginRequest, ReportCreateRequest, 
     ReportResponse, ReportDetailResponse, ComparisonRequest, ComparisonResponse,
-    create_access_token, verify_token
+    create_access_token, verify_token, ContactRequest, SimulateScoreRequest
 )
 from app.modules.advanced_nlp import AdvancedNLPAnalyzer
 from app.modules.explainability import ConfidenceExplainer
@@ -441,3 +441,347 @@ def list_comparisons(token: str = Depends(get_token_from_header), db: Session = 
     
     return comparisons
 
+
+# ============================================================================
+# CONTACT & SUPPORT ENDPOINTS
+# ============================================================================
+
+@router.post("/contact")
+def contact_form(contact_data: ContactRequest, db: Session = Depends(get_db)):
+    """Handle contact form submissions"""
+    try:
+        # Log contact message (in production, could send email)
+        contact_log = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "name": contact_data.name,
+            "email": contact_data.email,
+            "message": contact_data.message,
+            "status": "received"
+        }
+        print(f"📧 Contact Form: {contact_log}")
+        
+        return {
+            "success": True,
+            "message": "Thank you for reaching out! We'll get back to you soon.",
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    except Exception as e:
+        print(f"Error processing contact: {e}")
+        return {
+            "success": False,
+            "message": "Failed to submit contact form",
+            "error": str(e)
+        }
+
+
+# ============================================================================
+# PDF EXPORT ENDPOINT
+# ============================================================================
+
+@router.get("/reports/{report_id}/export/pdf")
+def export_pdf(report_id: int, token: str = Depends(get_token_from_header), db: Session = Depends(get_db)):
+    """Export report as PDF"""
+    try:
+        payload = verify_token(token)
+        user_id = payload.get("user_id")
+    except:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    report = db.query(Report).filter(
+        Report.id == report_id,
+        Report.user_id == user_id
+    ).first()
+    
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found")
+    
+    try:
+        generator = ReportGenerator({
+            "product_title": report.product_title,
+            "product_url": report.product_url,
+            "overall_score": report.overall_score,
+            "clarity_score": report.clarity_score,
+            "trust_score": report.trust_score,
+            "completeness_score": report.completeness_score,
+            "structure_score": report.structure_score,
+            "issues": report.issues,
+            "nlp_features": report.nlp_features,
+            "benchmark_comparison": report.benchmark_comparison,
+            "confidence_scores": report.confidence_scores
+        })
+        
+        pdf_content = generator.generate_pdf()
+        
+        if pdf_content:
+            return FileResponse(
+                path=pdf_content,
+                media_type="application/pdf",
+                filename=f"qurly-report-{report_id}.pdf"
+            )
+        else:
+            raise HTTPException(status_code=500, detail="Failed to generate PDF")
+    except Exception as e:
+        print(f"PDF generation error: {e}")
+        raise HTTPException(status_code=500, detail=f"PDF generation failed: {str(e)}")
+
+
+# ============================================================================
+# AI READINESS CHECKLIST ENDPOINT
+# ============================================================================
+
+@router.post("/analyze/checklist")
+def ai_readiness_checklist(request_data: SimulateScoreRequest) -> dict:
+    """
+    Generate AI readiness checklist for a product
+    
+    Returns structured checklist with pass/fail for each criterion
+    """
+    try:
+        product_data = request_data.product_data
+        description = request_data.description or ""
+        title = product_data.get("title", "")
+        
+        # Analyze description
+        nlp_analyzer = AdvancedNLPAnalyzer(description, title)
+        analysis = nlp_analyzer.analyze_full()
+        
+        # Generate checklist items
+        checklist = []
+        
+        # Product Title checks
+        checklist.append({
+            "category": "Product Title",
+            "check": "Title is descriptive and includes key attributes",
+            "passed": len(title) > 20,
+            "tip": "Use 40-60 character titles that describe the product and key benefits"
+        })
+        
+        # Description checks
+        desc_len = len(description.split())
+        checklist.append({
+            "category": "Description",
+            "check": "Description is 150-300 words",
+            "passed": 150 <= desc_len <= 300,
+            "tip": f"Current: {desc_len} words. Aim for detailed but scannable descriptions"
+        })
+        
+        # Trust Signals
+        checklist.append({
+            "category": "Trust Signals",
+            "check": "Has customer reviews",
+            "passed": product_data.get("review_count", 0) > 0,
+            "tip": "Encourage customers to leave reviews for social proof"
+        })
+        
+        checklist.append({
+            "category": "Trust Signals",
+            "check": "Has return policy",
+            "passed": product_data.get("has_return_policy", False),
+            "tip": "Clearly display return policy to build customer confidence"
+        })
+        
+        checklist.append({
+            "category": "Trust Signals",
+            "check": "Has shipping info",
+            "passed": product_data.get("has_shipping_policy", False),
+            "tip": "Display shipping times and costs upfront"
+        })
+        
+        # Images
+        image_count = product_data.get("image_count", 0)
+        checklist.append({
+            "category": "Images",
+            "check": "Has at least 3 product images",
+            "passed": image_count >= 3,
+            "tip": f"Current: {image_count} images. Multiple angles help AI agents understand products"
+        })
+        
+        # Pricing
+        price = product_data.get("price")
+        checklist.append({
+            "category": "Pricing",
+            "check": "Price is clearly listed",
+            "passed": price is not None and price > 0,
+            "tip": "Always display current pricing and any discounts clearly"
+        })
+        
+        # Structure
+        has_bullets = "•" in description or "- " in description or "\n" in description
+        checklist.append({
+            "category": "Structure",
+            "check": "Uses bullet points or structured formatting",
+            "passed": has_bullets,
+            "tip": "Use bullet points to make product features scannable for AI agents"
+        })
+        
+        # Keywords
+        keywords = analysis.get("keywords", {})
+        keyword_count = len(keywords.get("high_frequency", []))
+        checklist.append({
+            "category": "AI Keywords",
+            "check": "Contains specific, searchable keywords",
+            "passed": keyword_count >= 5,
+            "tip": f"Current: {keyword_count} high-frequency keywords. Use specific product attributes"
+        })
+        
+        # FAQ
+        checklist.append({
+            "category": "FAQ",
+            "check": "Has FAQ section",
+            "passed": product_data.get("has_faq", False),
+            "tip": "Add FAQ section to address common questions from both customers and AI agents"
+        })
+        
+        # Calculate summary
+        passed_count = sum(1 for item in checklist if item["passed"])
+        total = len(checklist)
+        readiness_percentage = int((passed_count / total) * 100)
+        
+        return {
+            "checklist": checklist,
+            "passed_count": passed_count,
+            "total": total,
+            "readiness_percentage": readiness_percentage
+        }
+    
+    except Exception as e:
+        print(f"Checklist generation error: {e}")
+        raise HTTPException(status_code=500, detail=f"Checklist generation failed: {str(e)}")
+
+
+# ============================================================================
+# SCORE SIMULATION ENDPOINT
+# ============================================================================
+
+@router.post("/simulate-score")
+def simulate_score(request_data: SimulateScoreRequest) -> dict:
+    """
+    Simulate score for a product description without saving to database
+    
+    Returns projected scores for the new description
+    """
+    try:
+        from app.modules.scoring_engine import ScoringEngine
+        from app.modules.nlp_analyzer import NLPAnalyzer
+        
+        description = request_data.description
+        product_data = request_data.product_data
+        
+        # Create mock ProductData
+        from app.schemas import ProductData
+        
+        mock_product = ProductData(
+            title=product_data.get("title", "Product"),
+            description=description,
+            price=product_data.get("price"),
+            currency=product_data.get("currency", "USD"),
+            image_count=product_data.get("image_count", 0),
+            review_count=product_data.get("review_count", 0),
+            average_rating=product_data.get("average_rating"),
+            has_faq=product_data.get("has_faq", False),
+            has_return_policy=product_data.get("has_return_policy", False),
+            has_shipping_policy=product_data.get("has_shipping_policy", False),
+            has_warranty=product_data.get("has_warranty", False),
+        )
+        
+        # Analyze with NLP
+        nlp_analyzer = NLPAnalyzer()
+        nlp_features = nlp_analyzer.analyze_description(description)
+        
+        # Advanced NLP
+        advanced_analyzer = AdvancedNLPAnalyzer(description, mock_product.title)
+        advanced_analysis = advanced_analyzer.analyze_full()
+        
+        nlp_features["sentiment"] = advanced_analysis["sentiment"]
+        nlp_features["readability"] = advanced_analysis["readability"]
+        nlp_features["keywords"] = advanced_analysis["keywords"]
+        nlp_features["spam_detection"] = advanced_analysis["spam_detection"]
+        
+        # Calculate scores
+        scoring_engine = ScoringEngine()
+        scores = scoring_engine.calculate_scores(mock_product, nlp_features)
+        
+        return {
+            "scores": scores,
+            "nlp_features": nlp_features,
+            "advanced_analysis": advanced_analysis
+        }
+    
+    except Exception as e:
+        print(f"Score simulation error: {e}")
+        raise HTTPException(status_code=500, detail=f"Score simulation failed: {str(e)}")
+
+
+# ============================================================================
+# SYNTHETIC BENCHMARK ENDPOINT
+# ============================================================================
+
+@router.get("/benchmark/category")
+def benchmark_by_category(category: str = "electronics") -> dict:
+    """
+    Return synthetic benchmark data for a product category
+    
+    Shows average AI readiness scores for the category
+    """
+    # Synthetic data for different categories
+    benchmarks = {
+        "electronics": {
+            "clarity_score": 7.2,
+            "trust_score": 6.8,
+            "completeness_score": 7.5,
+            "structure_score": 7.1,
+            "overall_score": 7.15,
+            "product_count": 245,
+            "category_name": "Electronics"
+        },
+        "clothing": {
+            "clarity_score": 6.9,
+            "trust_score": 7.2,
+            "completeness_score": 6.8,
+            "structure_score": 6.7,
+            "overall_score": 6.9,
+            "product_count": 312,
+            "category_name": "Clothing & Fashion"
+        },
+        "home-garden": {
+            "clarity_score": 7.4,
+            "trust_score": 7.1,
+            "completeness_score": 7.6,
+            "structure_score": 7.3,
+            "overall_score": 7.35,
+            "product_count": 189,
+            "category_name": "Home & Garden"
+        },
+        "sports": {
+            "clarity_score": 7.1,
+            "trust_score": 6.9,
+            "completeness_score": 7.2,
+            "structure_score": 7.0,
+            "overall_score": 7.05,
+            "product_count": 156,
+            "category_name": "Sports & Outdoors"
+        },
+        "beauty": {
+            "clarity_score": 7.5,
+            "trust_score": 7.3,
+            "completeness_score": 7.4,
+            "structure_score": 7.2,
+            "overall_score": 7.35,
+            "product_count": 203,
+            "category_name": "Beauty & Personal Care"
+        },
+    }
+    
+    # Get benchmark data for category (default to electronics if not found)
+    category_lower = category.lower().replace(" ", "-")
+    benchmark = benchmarks.get(category_lower, benchmarks["electronics"])
+    
+    # Add additional metrics
+    benchmark["distribution"] = {
+        "excellent": 22,  # % of products > 8.5
+        "good": 35,       # 7.5-8.5
+        "average": 28,    # 6.5-7.5
+        "below_average": 15  # < 6.5
+    }
+    
+    return benchmark

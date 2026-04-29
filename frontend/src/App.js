@@ -14,6 +14,7 @@ import HistoricalTracking from './components/HistoricalTracking';
 import ComparisonView from './components/ComparisonView';
 import RecommendationActions from './components/RecommendationActions';
 import LandingPage from './components/LandingPage';
+import ErrorBoundary from './components/ErrorBoundary';
 import './App.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
@@ -147,9 +148,10 @@ function App() {
 
   // Main app view
   return (
-    <div className="app">
-    {/* Navigation Header */}
-    <nav className="navbar">
+    <ErrorBoundary>
+      <div className="app">
+      {/* Navigation Header */}
+      <nav className="navbar">
       <div className="nav-container">
         <button 
           onClick={() => setCurrentPage('landing')}
@@ -429,8 +431,9 @@ function App() {
         </div>
       </footer>
       </div>
-    );
-  }
+    </ErrorBoundary>
+  );
+}
 
 const navButtonStyle = {
   display: 'flex',

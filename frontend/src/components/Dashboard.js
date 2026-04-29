@@ -90,7 +90,15 @@ function Dashboard({ user, onLogout }) {
         <div style={styles.loading}>Loading reports...</div>
       ) : reports.length === 0 ? (
         <div style={styles.emptyState}>
-          <p>No reports yet. Start by analyzing a product!</p>
+          <div style={styles.emptyStateIcon}>📊</div>
+          <h2 style={styles.emptyStateTitle}>No analyses yet</h2>
+          <p style={styles.emptyStateMessage}>Start by analyzing your first Shopify product to get AI-powered insights and optimization recommendations.</p>
+          <button 
+            onClick={() => window.location.href = '/'}
+            style={styles.emptyStateButton}
+          >
+            Analyze Your First Product →
+          </button>
         </div>
       ) : (
         <div style={styles.reportsList}>
@@ -134,6 +142,18 @@ function Dashboard({ user, onLogout }) {
                 <div style={styles.actions}>
                   <button 
                     style={styles.iconBtn}
+                    onClick={() => {
+                      // Copy shareable link to clipboard
+                      const shareLink = `${window.location.origin}?report_id=${report.id}`;
+                      navigator.clipboard.writeText(shareLink);
+                      alert('Link copied to clipboard! 📋');
+                    }}
+                    title="Copy shareable link"
+                  >
+                    <FiShare2 size={18} />
+                  </button>
+                  <button 
+                    style={styles.iconBtn}
                     onClick={() => toggleFavorite(report.id)}
                     title="Toggle favorite"
                   >
@@ -145,13 +165,6 @@ function Dashboard({ user, onLogout }) {
                     title="Export as JSON"
                   >
                     <FiDownload size={18} />
-                  </button>
-                  <button
-                    style={styles.iconBtn}
-                    onClick={() => exportReport(report.id, 'text')}
-                    title="Export as text"
-                  >
-                    <FiShare2 size={18} />
                   </button>
                   <button
                     style={{...styles.iconBtn, color: '#ef4444'}}
@@ -222,9 +235,37 @@ const styles = {
   emptyState: {
     textAlign: 'center',
     padding: '3rem',
-    background: '#F5E6D3',
+    background: 'linear-gradient(135deg, #F5E6D3 0%, #FAF5ED 100%)',
     borderRadius: '1rem',
+    border: '2px dashed #E8D4B0',
+  },
+  emptyStateIcon: {
+    fontSize: '3rem',
+    marginBottom: '1rem',
+  },
+  emptyStateTitle: {
+    fontSize: '1.5rem',
+    fontWeight: '700',
+    color: '#2C2C2C',
+    marginBottom: '0.75rem',
+  },
+  emptyStateMessage: {
+    fontSize: '0.95rem',
     color: '#8B7D6B',
+    marginBottom: '1.5rem',
+    maxWidth: '400px',
+    margin: '0 auto 1.5rem',
+  },
+  emptyStateButton: {
+    padding: '0.75rem 1.5rem',
+    background: '#9A7D5D',
+    color: 'white',
+    border: 'none',
+    borderRadius: '0.5rem',
+    cursor: 'pointer',
+    fontWeight: '600',
+    fontSize: '0.95rem',
+    transition: 'all 0.25s ease',
   },
   reportsList: {
     display: 'grid',

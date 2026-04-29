@@ -19,6 +19,7 @@ from app.modules.advanced_nlp import AdvancedNLPAnalyzer
 from app.modules.explainability import ConfidenceExplainer
 from app.modules.gemini_insights import get_gemini_insights
 from app.database import init_db
+from app.config import settings
 
 # Load environment variables
 load_dotenv()
@@ -30,21 +31,10 @@ app = FastAPI(
     version="2.0.0",
 )
 
-# Add CORS middleware
+# Add CORS middleware with dynamic origins from config
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://localhost:3002",
-        "http://localhost:3003",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:3001",
-        "http://127.0.0.1:3002",
-        "http://127.0.0.1:3003",
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-    ],
+    allow_origins=settings.get_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

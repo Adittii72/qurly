@@ -11,11 +11,12 @@ python-multipart==0.0.6
 aiofiles==23.2.1
 sqlalchemy==2.0.23
 alembic==1.13.0
-pyjwt==2.8.1
+pyjwt==2.12.1
 google-auth==2.25.2
 google-auth-oauthlib==1.2.0
 google-auth-httplib2==0.2.0
 reportlab==4.0.7
 python-jose==3.3.0
-passlib==1.7.4
-python-multipart==0.0.6
+passlib[bcrypt]==1.7.4
+psycopg2-binary==2.9.9
+lxml==4.9.3
