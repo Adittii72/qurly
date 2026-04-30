@@ -1,8 +1,3 @@
-# Environment Variables
-.env
-.env.local
-.env.*.local
-
 # Python
 __pycache__/
 *.py[cod]
@@ -21,8 +16,6 @@ parts/
 sdist/
 var/
 wheels/
-pip-wheel-metadata/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -34,7 +27,18 @@ ENV/
 env/
 .venv
 
-# IDE
+# Environment Variables
+.env
+.env.local
+.env.*.local
+*.env
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# IDEs
 .vscode/
 .idea/
 *.swp
@@ -42,18 +46,32 @@ env/
 *~
 .DS_Store
 
-# Node/npm
+# Node
 node_modules/
-npm-debug.log
-yarn-error.log
-.npm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# React
+/frontend/build
+/frontend/.cache
+/frontend/coverage
+
+# Logs
+*.log
+logs/
 
 # OS
-.DS_Store
 Thumbs.db
-*.log
+.DS_Store
 
-# Project specific
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Temporary files
+*.tmp
+*.temp
 .cache/
-*.db
-*.sqlite

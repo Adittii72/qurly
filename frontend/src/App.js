@@ -19,7 +19,7 @@ import LoadingSkeleton from './components/LoadingSkeleton';
 import AIReadinessChecklist from './components/AIReadinessChecklist';
 import './App.css';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
 
 function App() {
   // Authentication state
@@ -300,14 +300,6 @@ function App() {
               <AIPerception perception={result.ai_perception} score={result.scores.overall} />
             </section>
 
-            {/* AI Readiness Checklist */}
-            <section style={{marginBottom: '2rem'}}>
-              <AIReadinessChecklist 
-                productData={result.product_data}
-                description={result.product_data.description}
-              />
-            </section>
-
             {/* Confidence Explainer */}
             {result.confidence_scores && (
               <section style={{marginBottom: '2rem'}}>
@@ -324,11 +316,6 @@ function App() {
                 <ScoreCard label="Completeness" score={result.scores.completeness} />
                 <ScoreCard label="Structure" score={result.scores.structure} />
               </div>
-            </section>
-
-            {/* Benchmark Comparison */}
-            <section className="benchmark-section">
-              <BenchmarkComparison data={result.benchmark_comparison} />
             </section>
 
             {/* Recommendation Actions (AI Optimization Suite) */}
@@ -350,7 +337,6 @@ function App() {
 
             {/* Rewrite Feature */}
             <section className="rewrite-section">
-              <BeforeAfter original={result.product_data.description} />
               <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem'}}>
                 <button 
                   className="rewrite-button"
