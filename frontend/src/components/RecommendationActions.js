@@ -121,7 +121,7 @@ function RecommendationActions({ reportId, originalDescription, originalTitle })
                 {suggestion.suggested_content.split('\n').map((bullet, idx) => (
                   bullet.trim() && (
                     <li key={idx} style={styles.bulletItem}>
-                      {bullet.replace(/^[•\-\*]\s*/, '')}
+                      {bullet.replace(/^[•\-*]\s*/, '')}
                     </li>
                   )
                 ))}

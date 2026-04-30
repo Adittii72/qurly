@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiArrowRight, FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 
 /**
  * BeforeAfter Component - Show original description with optimization potential

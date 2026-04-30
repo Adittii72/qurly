@@ -45,7 +45,6 @@ function HistoricalTracking({ reportId }) {
   const firstScore = history.history[0].overall_score;
   const lastScore = history.history[history.history.length - 1].overall_score;
   const improvement = lastScore - firstScore;
-  const trend = improvement > 0 ? 'improving' : improvement < 0 ? 'declining' : 'stable';
 
   const minScore = Math.min(...history.history.map(h => h.overall_score));
   const maxScore = Math.max(...history.history.map(h => h.overall_score));

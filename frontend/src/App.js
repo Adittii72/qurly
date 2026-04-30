@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FiSearch, FiCheckCircle, FiAlertCircle, FiTrendingUp, FiZap, FiTarget, FiLogOut, FiHome, FiBarChart2 } from 'react-icons/fi';
+import { FiSearch, FiCheckCircle, FiAlertCircle, FiTrendingUp, FiZap, FiTarget, FiLogOut, FiBarChart2 } from 'react-icons/fi';
 import ScoreCard from './components/ScoreCard';
 import IssuesList from './components/IssuesList';
 import AIPerception from './components/AIPerception';
-import BenchmarkComparison from './components/BenchmarkComparison';
-import BeforeAfter from './components/BeforeAfter';
 import RewriteModal from './components/RewriteModal';
-import LoginForm from './components/LoginForm';
 import Dashboard from './components/Dashboard';
 import ConfidenceExplainer from './components/ConfidenceExplainer';
 import HistoricalTracking from './components/HistoricalTracking';
@@ -16,7 +13,6 @@ import RecommendationActions from './components/RecommendationActions';
 import LandingPage from './components/LandingPage';
 import ErrorBoundary from './components/ErrorBoundary';
 import LoadingSkeleton from './components/LoadingSkeleton';
-import AIReadinessChecklist from './components/AIReadinessChecklist';
 import './App.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
