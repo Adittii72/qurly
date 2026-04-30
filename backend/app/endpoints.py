@@ -40,43 +40,67 @@ def get_token_from_header(authorization: Optional[str] = Header(None)) -> str:
 # AUTHENTICATION ENDPOINTS
 # ============================================================================
 
-@router.post("/auth/signup", response_model=LoginResponse)
+@router.post("/auth/signup")
 def signup(user_data: UserCreate, db: Session = Depends(get_db)):
     """Create new user account with password"""
-    from app.auth import hash_password
-    
-    # Check if user already exists
-    existing_user = db.query(User).filter(User.email == user_data.email).first()
-    if existing_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    
-    existing_username = db.query(User).filter(User.username == user_data.username).first()
-    if existing_username:
-        raise HTTPException(status_code=400, detail="Username already taken")
-    
-    # Hash password
-    password_hash = hash_password(user_data.password)
-    
-    # Create new user
-    new_user = User(
-        email=user_data.email,
-        username=user_data.username,
-        password_hash=password_hash,
-        google_id=user_data.google_id,
-        profile_picture=user_data.profile_picture
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    
-    # Generate token
-    token = create_access_token(new_user.id, new_user.email)
-    
-    return {
-        "access_token": token,
-        "token_type": "bearer",
-        "user": UserResponse.from_orm(new_user)
-    }
+    print("=" * 80)
+    print("🔵 SIGNUP ENDPOINT CALLED")
+    print(f"Email: {user_data.email}")
+    print(f"Username: {user_data.username}")
+    print("=" * 80)
+    try:
+        from app.auth import hash_password
+        
+        # Check if user already exists
+        existing_user = db.query(User).filter(User.email == user_data.email).first()
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        existing_username = db.query(User).filter(User.username == user_data.username).first()
+        if existing_username:
+            raise HTTPException(status_code=400, detail="Username already taken")
+        
+        # Hash password
+        password_hash = hash_password(user_data.password)
+        
+        # Create new user
+        new_user = User(
+            email=user_data.email,
+            username=user_data.username,
+            password_hash=password_hash,
+            google_id=user_data.google_id if hasattr(user_data, 'google_id') else None,
+            profile_picture=user_data.profile_picture if hasattr(user_data, 'profile_picture') else None
+        )
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        
+        # Generate token
+        token = create_access_token(new_user.id, new_user.email)
+        
+        # Create response as plain dict
+        response = {
+            "access_token": token,
+            "token_type": "bearer",
+            "user": {
+                "id": new_user.id,
+                "email": new_user.email,
+                "username": new_user.username,
+                "profile_picture": new_user.profile_picture,
+                "created_at": new_user.created_at.isoformat() if new_user.created_at else None
+            }
+        }
+        
+        print("✅ Signup successful!")
+        print(f"Response: {response}")
+        return response
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Signup error: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Signup failed: {str(e)}")
 
 
 @router.post("/auth/login", response_model=LoginResponse)
@@ -100,7 +124,7 @@ def login(login_data: UserLogin, db: Session = Depends(get_db)):
     return {
         "access_token": token,
         "token_type": "bearer",
-        "user": UserResponse.from_orm(user)
+        "user": UserResponse.model_validate(user)
     }
 
 
