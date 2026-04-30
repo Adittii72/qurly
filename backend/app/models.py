@@ -19,11 +19,32 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
+    # Daily analysis limit tracking
+    daily_analysis_count = Column(Integer, default=0)
+    last_analysis_reset = Column(DateTime, default=datetime.utcnow)
+    
     # Relationships
     reports = relationship("Report", back_populates="user", cascade="all, delete-orphan")
     
     def __repr__(self):
         return f"<User(email='{self.email}', username='{self.username}')>"
+    
+    def can_analyze(self, daily_limit: int = 5) -> bool:
+        """Check if user can perform analysis (5 per day limit)"""
+        from datetime import datetime, timedelta
+        
+        # Reset counter if it's a new day
+        if self.last_analysis_reset:
+            time_since_reset = datetime.utcnow() - self.last_analysis_reset
+            if time_since_reset > timedelta(days=1):
+                self.daily_analysis_count = 0
+                self.last_analysis_reset = datetime.utcnow()
+        
+        return self.daily_analysis_count < daily_limit
+    
+    def increment_analysis_count(self):
+        """Increment daily analysis counter"""
+        self.daily_analysis_count += 1
 
 
 class Report(Base):
