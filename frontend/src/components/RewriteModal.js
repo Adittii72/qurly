@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FiX, FiCopy, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
 
 /**
  * RewriteModal Component - Generate AI-optimized descriptions
@@ -18,11 +18,16 @@ function RewriteModal({ productData, onClose }) {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API_URL}/api/rewrite`, {
-        description: productData.description,
-        product_title: productData.title,
-        key_features: [],
-      });
+      const token = localStorage.getItem('qurly_token');
+      const response = await axios.post(
+        `${API_URL}/api/rewrite`,
+        {
+          description: productData.description,
+          product_title: productData.title,
+          key_features: [],
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
       setRewritten(response.data);
     } catch (err) {

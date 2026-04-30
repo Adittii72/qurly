@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FiArrowRight, FiX } from 'react-icons/fi';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
 
 /**
  * ComparisonView Component - Compare two products side-by-side

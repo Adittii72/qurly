@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FiLogOut, FiTrash2, FiDownload, FiShare2, FiStar } from 'react-icons/fi';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
 
 /**
  * Dashboard Component - User's saved reports and history

@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
-import { FiEdit3, FiCheck, FiX, FiCopy } from 'react-icons/fi';
+import { FiCheck, FiX } from 'react-icons/fi';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
 
 /**
  * RecommendationActions Component - Optimization suite with AI-powered suggestions
  */
-function RecommendationActions({ reportId, originalDescription, originalTitle, onActionApplied }) {
+function RecommendationActions({ reportId, originalDescription, originalTitle }) {
   const [activeTab, setActiveTab] = useState('rewrite'); // 'rewrite', 'bullets', 'title'
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [suggestion, setSuggestion] = useState(null);
-  const [copied, setCopied] = useState(false);
 
   const handleGenerate = async (actionType) => {
     setError('');
@@ -141,17 +140,11 @@ function RecommendationActions({ reportId, originalDescription, originalTitle, o
 
           <div style={styles.actionButtons}>
             <button
-              onClick={handleCopy}
-              style={{...styles.actionBtn, ...styles.copyBtn}}
-            >
-              {copied ? <FiCheck size={18} /> : <FiCopy size={18} />}
-              {copied ? 'Copied!' : 'Copy to Clipboard'}
-            </button>
-            <button
-              onClick={handleApply}
+              onClick={() => alert('Upgrade to Pro to apply suggestions automatically!')}
               style={{...styles.actionBtn, ...styles.applyBtn}}
             >
-              <FiCheck size={18} /> Apply Suggestion
+              <FiCheck size={18} />
+              Apply Suggestion (Pro)
             </button>
             <button
               onClick={() => setSuggestion(null)}
@@ -327,7 +320,7 @@ const styles = {
   },
   actionButtons: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(3, 1fr)',
+    gridTemplateColumns: 'repeat(2, 1fr)',
     gap: '0.75rem',
     marginBottom: '1rem',
   },

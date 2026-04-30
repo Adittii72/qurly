@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiAlertCircle, FiTrendingUp, FiCheckCircle } from 'react-icons/fi';
+import { FiAlertCircle, FiCheckCircle } from 'react-icons/fi';
 
 /**
  * IssuesList Component - Display ranked issues with recommendations

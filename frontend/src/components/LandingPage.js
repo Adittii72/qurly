@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { FiArrowRight, FiCheckCircle, FiTrendingUp, FiTarget, FiMail, FiPhone, FiMapPin, FiZap, FiBarChart2, FiShoppingCart, FiCode, FiUsers } from 'react-icons/fi';
+import { FiArrowRight, FiCheckCircle, FiTrendingUp, FiTarget, FiMail, FiPhone, FiZap, FiBarChart2, FiCode, FiUsers } from 'react-icons/fi';
 import axios from 'axios';
 import LoginForm from './LoginForm';
 import '../styles/LandingPage.css';
 
-function LandingPage({ onGetStarted, onNavigate, onLogin }) {
+function LandingPage({ onGetStarted, onLogin }) {
   const [contactForm, setContactForm] = useState({
     name: '',
     email: '',
@@ -23,7 +23,7 @@ function LandingPage({ onGetStarted, onNavigate, onLogin }) {
     e.preventDefault();
     
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
       await axios.post(`${API_URL}/api/contact`, contactForm);
       
       setContactSubmitted(true);
@@ -105,16 +105,16 @@ function LandingPage({ onGetStarted, onNavigate, onLogin }) {
             </div>
             <div className="hero-stats">
               <div className="stat">
-                <span className="stat-number">10K+</span>
+                <span className="stat-number">500+</span>
                 <span className="stat-label">Products Analyzed</span>
               </div>
               <div className="stat">
-                <span className="stat-number">2.5x</span>
-                <span className="stat-label">Average CTR Improvement</span>
+                <span className="stat-number">50+</span>
+                <span className="stat-label">Active Users</span>
               </div>
               <div className="stat">
-                <span className="stat-number">95%</span>
-                <span className="stat-label">Accuracy Rate</span>
+                <span className="stat-number">2x</span>
+                <span className="stat-label">Avg. Score Improvement</span>
               </div>
             </div>
           </div>
@@ -307,20 +307,20 @@ function LandingPage({ onGetStarted, onNavigate, onLogin }) {
 
           <div className="about-stats">
             <div className="stat-box">
-              <div className="stat-number">10,000+</div>
+              <div className="stat-number">500+</div>
               <p>Products Analyzed</p>
             </div>
             <div className="stat-box">
-              <div className="stat-number">500+</div>
+              <div className="stat-number">50+</div>
               <p>Active Users</p>
             </div>
             <div className="stat-box">
-              <div className="stat-number">2.5x</div>
-              <p>Avg. CTR Increase</p>
+              <div className="stat-number">2x</div>
+              <p>Avg. Score Increase</p>
             </div>
             <div className="stat-box">
-              <div className="stat-number">95%</div>
-              <p>Accuracy Rate</p>
+              <div className="stat-number">90%</div>
+              <p>User Satisfaction</p>
             </div>
           </div>
         </div>
@@ -341,8 +341,8 @@ function LandingPage({ onGetStarted, onNavigate, onLogin }) {
               </div>
               <div>
                 <h4>Email</h4>
-                <p>support@qurly.io</p>
-                <a href="mailto:support@qurly.io" className="contact-link">Send us an email</a>
+                <p>aditi1411ss@gmail.com</p>
+                <a href="mailto:aditi1411ss@gmail.com" className="contact-link">Send us an email</a>
               </div>
             </div>
 
@@ -352,19 +352,8 @@ function LandingPage({ onGetStarted, onNavigate, onLogin }) {
               </div>
               <div>
                 <h4>Phone</h4>
-                <p>+1 (555) 123-4567</p>
-                <a href="tel:+15551234567" className="contact-link">Call us</a>
-              </div>
-            </div>
-
-            <div className="contact-item">
-              <div className="contact-icon">
-                <FiMapPin size={24} />
-              </div>
-              <div>
-                <h4>Location</h4>
-                <p>San Francisco, CA</p>
-                <a href="#" className="contact-link">View on map</a>
+                <p>+91 8799550781</p>
+                <a href="tel:+918799550781" className="contact-link">Call us</a>
               </div>
             </div>
           </div>

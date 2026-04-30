@@ -5,7 +5,11 @@ import { FiTarget } from 'react-icons/fi';
  * BenchmarkComparison Component - Compare metrics against ideal standards
  */
 function BenchmarkComparison({ data }) {
+  if (!data) return null;
+  
   const MetricComparison = ({ label, current, ideal, gap }) => {
+    if (current === undefined || ideal === undefined) return null;
+    
     const percentage = (current / ideal) * 100;
     const isGood = percentage >= 80;
     
@@ -50,39 +54,49 @@ function BenchmarkComparison({ data }) {
       </div>
       
       <div style={styles.metricsGrid}>
-        <MetricComparison
-          label="Clarity"
-          current={data.clarity.current}
-          ideal={data.clarity.ideal}
-          gap={data.clarity.gap}
-        />
-        <MetricComparison
-          label="Trust"
-          current={data.trust.current}
-          ideal={data.trust.ideal}
-          gap={data.trust.gap}
-        />
-        <MetricComparison
-          label="Completeness"
-          current={data.completeness.current}
-          ideal={data.completeness.ideal}
-          gap={data.completeness.gap}
-        />
-        <MetricComparison
-          label="Structure"
-          current={data.structure.current}
-          ideal={data.structure.ideal}
-          gap={data.structure.gap}
-        />
-        
-        <div style={styles.overallMetric}>
+        {data.clarity && (
           <MetricComparison
-            label="Overall Score"
-            current={data.overall.current}
-            ideal={data.overall.ideal}
-            gap={data.overall.gap}
+            label="Clarity"
+            current={data.clarity.current}
+            ideal={data.clarity.ideal}
+            gap={data.clarity.gap}
           />
-        </div>
+        )}
+        {data.trust && (
+          <MetricComparison
+            label="Trust"
+            current={data.trust.current}
+            ideal={data.trust.ideal}
+            gap={data.trust.gap}
+          />
+        )}
+        {data.completeness && (
+          <MetricComparison
+            label="Completeness"
+            current={data.completeness.current}
+            ideal={data.completeness.ideal}
+            gap={data.completeness.gap}
+          />
+        )}
+        {data.structure && (
+          <MetricComparison
+            label="Structure"
+            current={data.structure.current}
+            ideal={data.structure.ideal}
+            gap={data.structure.gap}
+          />
+        )}
+        
+        {data.overall && (
+          <div style={styles.overallMetric}>
+            <MetricComparison
+              label="Overall Score"
+              current={data.overall.current}
+              ideal={data.overall.ideal}
+              gap={data.overall.gap}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FiMail, FiUser, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
 
 /**
  * LoginForm Component - Authentication for Qurly
@@ -96,6 +96,7 @@ function LoginForm({ onLogin, onLoginSuccess, isSignup = false }) {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
+                autoComplete="off"
                 style={styles.input}
               />
             </div>
@@ -112,6 +113,7 @@ function LoginForm({ onLogin, onLoginSuccess, isSignup = false }) {
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Choose a username"
                   required
+                  autoComplete="off"
                   style={styles.input}
                 />
               </div>
@@ -128,6 +130,7 @@ function LoginForm({ onLogin, onLoginSuccess, isSignup = false }) {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
                 required
+                autoComplete="off"
                 style={styles.input}
               />
               <button
@@ -152,6 +155,7 @@ function LoginForm({ onLogin, onLoginSuccess, isSignup = false }) {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Confirm your password"
                   required
+                  autoComplete="off"
                   style={styles.input}
                 />
               </div>

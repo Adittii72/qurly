@@ -8,6 +8,8 @@ function ConfidenceExplainer({ explanations }) {
   if (!explanations) return null;
 
   const renderFactors = (factors) => {
+    if (!factors || !Array.isArray(factors)) return null;
+    
     return (
       <div style={styles.factorsList}>
         {factors.map((factor, idx) => {
