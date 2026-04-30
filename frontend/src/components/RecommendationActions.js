@@ -49,16 +49,9 @@ function RecommendationActions({ reportId, originalDescription, originalTitle })
       );
 
       setSuggestion(null);
-      onActionApplied?.();
     } catch (err) {
       setError('Failed to apply suggestion');
     }
-  };
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(suggestion.suggested_content);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
