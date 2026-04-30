@@ -174,8 +174,14 @@ def decode_token(token: str) -> Optional[dict]:
 
 
 def verify_token(token: str) -> Optional[dict]:
-    """Alias for decode_token for backwards compatibility"""
-    return decode_token(token)
+    """Verify and decode JWT token"""
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise Exception("Token has expired")
+    except jwt.InvalidTokenError:
+        raise Exception("Invalid token")
 
 
 class ComparisonRequest(BaseModel):
@@ -196,25 +202,3 @@ class ComparisonResponse(BaseModel):
     
     class Config:
         from_attributes = True
-
-
-def create_access_token(user_id: int, email: str) -> str:
-    """Create JWT access token"""
-    payload = {
-        "user_id": user_id,
-        "email": email,
-        "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    }
-    encoded_jwt = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
-
-
-def verify_token(token: str) -> dict:
-    """Verify JWT token"""
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
-    except jwt.ExpiredSignatureError:
-        raise Exception("Token has expired")
-    except jwt.InvalidTokenError:
-        raise Exception("Invalid token")
