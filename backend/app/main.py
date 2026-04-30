@@ -59,11 +59,9 @@ def startup_event():
         print(f"✗ Database initialization error: {e}")
 
 # Include advanced endpoints
-try:
-    from app.endpoints import router as advanced_router
-    app.include_router(advanced_router)
-except Exception as e:
-    print(f"Warning: Could not load advanced endpoints: {e}")
+from app.endpoints import router as advanced_router
+app.include_router(advanced_router)
+print("✓ Advanced endpoints loaded")
 
 
 
