@@ -223,22 +223,6 @@ Frontend will run on: http://localhost:3000
 
 ---
 
-## 🎨 Screenshots
-
-### Landing Page
-![Landing Page](screenshots/landing-page.png)
-
-### Analysis Dashboard
-![Dashboard](screenshots/dashboard.png)
-
-### AI Insights
-![AI Insights](screenshots/ai-insights.png)
-
-### Optimization Recommendations
-![Recommendations](screenshots/recommendations.png)
-
----
-
 ## 📹 Demo Video & Resources
 
 **[📁 Google Drive - Project Resources](https://drive.google.com/drive/folders/1aKmtHIunsTFmkYBrDnj6b0GSj85CmQjT?usp=sharing)**
@@ -383,36 +367,12 @@ curl -X POST "http://localhost:8001/api/analyze?url=https://example.myshopify.co
 ### Aditi Shrimankar
 **Role**: Product Lead & Full-Stack Developer
 
-**Responsibilities**:
-- Product vision and strategy
-- Frontend architecture and development
-  - React component design
-  - UI/UX implementation
-  - Landing page and dashboard
-  - Responsive design
-- Backend API integration
-- User authentication flow
-- Deployment configuration (Vercel & Render)
-- Documentation and README
-- Testing and quality assurance
+Aditi led the product vision and designed the complete user experience, including the landing page, dashboard, and all frontend components using React. She implemented the authentication flow, integrated backend APIs, configured deployment on Vercel and Render, and created comprehensive documentation including README, demo scripts, and presentation materials.
 
-**Time Split**: 60% Product/Design, 40% Development
-
-### Bushra Mahek
+### Bushra Mahek M
 **Role**: Backend Developer & AI Integration Specialist
 
-**Responsibilities**:
-- Backend architecture design
-- FastAPI endpoint development
-- Database schema and models
-- NLP analysis engine implementation
-- Google Gemini AI integration
-- Scoring algorithms
-- Shopify scraper development
-- Authentication and security
-- API documentation
-
-**Time Split**: 70% Development, 30% AI/ML Integration
+Bushra architected and developed the entire backend infrastructure using FastAPI, including database models, API endpoints, and authentication systems. She implemented the core NLP analysis engine, integrated Google Gemini AI for advanced insights, developed the scoring algorithms (Clarity, Trust, Completeness, Structure), and built the Shopify scraper with fallback mechanisms.
 
 ---
 
@@ -532,7 +492,6 @@ This project is private and proprietary. All rights reserved.
 - [x] README with setup instructions
 - [x] Contribution note
 - [x] Decision log
-- [x] Screenshots
 - [x] Live deployment
 
 ---
