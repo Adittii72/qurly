@@ -5,7 +5,7 @@ from pydantic import BaseModel, EmailStr
 from datetime import datetime, timedelta
 from typing import Optional
 import os
-import jwt
+from jose import jwt
 from passlib.context import CryptContext
 
 # Password hashing context
