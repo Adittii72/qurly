@@ -239,18 +239,22 @@ Frontend will run on: http://localhost:3000
 
 ---
 
-## 📹 Demo Video
+## 📹 Demo Video & Resources
 
-**[Demo Video Link - Google Drive]**
+**[📁 Google Drive - Project Resources](https://drive.google.com/drive/folders/1aKmtHIunsTFmkYBrDnj6b0GSj85CmQjT?usp=sharing)**
 
-*3-5 minute screen recording with narration demonstrating:*
+*This folder contains:*
+- 🎥 Demo video (3-5 minute screen recording with narration)
+- 📸 Screenshots of the application
+- 📄 Additional documentation
+- 🎨 Presentation materials
+
+*Demo video demonstrates:*
 - Product analysis workflow
 - AI insights interpretation
 - Optimization recommendations
 - Dashboard features
 - Before/after comparison
-
-**Note**: Video will be uploaded to Google Drive and link will be added here.
 
 ---
 
@@ -524,7 +528,7 @@ This project is private and proprietary. All rights reserved.
 - [x] Product Document
 - [x] Technical Document
 - [x] Working code in public GitHub repo
-- [ ] Demo video (3-5 minutes)
+- [x] Demo video (3-5 minutes) - [Google Drive](https://drive.google.com/drive/folders/1aKmtHIunsTFmkYBrDnj6b0GSj85CmQjT?usp=sharing)
 - [x] README with setup instructions
 - [x] Contribution note
 - [x] Decision log
