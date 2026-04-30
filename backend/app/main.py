@@ -31,14 +31,15 @@ app = FastAPI(
     version="2.0.0",
 )
 
-# Add CORS middleware - configure for production after deployment
+# Add CORS middleware - configured for production
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
         "http://localhost:3001",
         "https://*.vercel.app",  # All Vercel deployments
-        "https://qurly-frontend.vercel.app",  # Update with your actual Vercel URL
+        "https://qurly-frontend.vercel.app",  # Your production URL
+        "https://qurly-frontend-git-main-aditi-shrimankars-projects.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
